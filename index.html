@@ -536,11 +536,11 @@
     </div>
     <div class="card" id="logTable"></div>
     <div class="backup-row">
-      <button class="btn-ghost" id="backupSave">백업 파일 저장</button>
-      <button class="btn-ghost" id="backupLoadBtn">백업 불러오기</button>
-      <input type="file" id="backupLoad" accept=".json,application/json" style="display:none;">
-      <button class="btn-ghost" id="csvSave">엑셀용 CSV 저장</button>
-      <span class="note">결보강 기록은 지금 쓰는 컴퓨터의 브라우저에 저장됩니다. 다른 컴퓨터에서 이어 쓰려면 백업 파일을 저장해 옮긴 뒤 「백업 불러오기」를 눌러 주세요.</span>
+      <button class="btn-ghost" id="backupSave">💾 백업 파일 저장 (엑셀)</button>
+      <button class="btn-ghost" id="backupLoadBtn">📂 백업 불러오기</button>
+      <input type="file" id="backupLoad" accept=".xlsx,.json" style="display:none;">
+      <button class="btn-ghost" id="xlsxSave">📊 엑셀 파일로 저장 (일지 형식)</button>
+      <span class="note">결보강 기록은 지금 쓰는 컴퓨터의 브라우저에 저장됩니다. 받은 파일은 모두 엑셀(.xlsx)이라 두 번 누르면 엑셀에서 바로 열립니다. 다른 컴퓨터에서 이어 쓰려면 백업 파일을 옮긴 뒤 「백업 불러오기」로 그 엑셀 파일을 고르세요(엑셀에서 고쳐 저장한 파일도 됩니다).</span>
     </div>
   </section>
 
@@ -875,7 +875,7 @@
   // 결보강 기록 저장 · 날짜 계산
   // =====================================================================
   // 기록은 이 브라우저(localStorage)에 저장된다. 서버가 없는 정적 페이지라
-  // 다른 컴퓨터와는 백업 파일(JSON)로 주고받는다.
+  // 다른 컴퓨터와는 백업 파일(엑셀)로 주고받는다.
   const LS_RECORDS = 'timetable.subRecords.v1';
   const LS_META = 'timetable.teacherMeta.v1';
   function lsGet(key, fallback){
@@ -1716,17 +1716,171 @@
     openPrintWindow(pages.join(''), '결보강 현황', '@page{size:A4 portrait; margin:12mm;}');
   }
 
-  // ----- 백업 · CSV -----
-  function download(filename, text, type){
-    const blob = new Blob([text], {type});
+  // ----- 엑셀(.xlsx) 파일 만들기 · 읽기 -----
+  // 엑셀 파일은 XML 몇 개를 zip으로 묶은 것이라, 외부 라이브러리 없이 직접 만들고 읽는다.
+  function download(filename, data, type){
+    const blob = data instanceof Blob ? data : new Blob([data], {type});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = filename;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(()=> URL.revokeObjectURL(url), 10000);
   }
+  const CRC_TABLE = (()=>{
+    const t = new Uint32Array(256);
+    for(let n=0; n<256; n++){ let c = n; for(let k=0; k<8; k++) c = c & 1 ? 0xEDB88320 ^ (c>>>1) : c>>>1; t[n] = c>>>0; }
+    return t;
+  })();
+  function crc32(bytes){
+    let c = 0xFFFFFFFF;
+    for(let i=0; i<bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xFF] ^ (c>>>8);
+    return (c ^ 0xFFFFFFFF) >>> 0;
+  }
+  // 압축 없이(stored) 묶는 zip
+  function zipFiles(files, type){
+    const enc = new TextEncoder();
+    const parts = [], central = [];
+    const now = new Date();
+    const dosTime = (now.getHours()<<11) | (now.getMinutes()<<5) | (now.getSeconds()>>1);
+    const dosDate = ((now.getFullYear()-1980)<<9) | ((now.getMonth()+1)<<5) | now.getDate();
+    let offset = 0;
+    files.forEach(f=>{
+      const name = enc.encode(f.name), data = enc.encode(f.text), crc = crc32(data);
+      const lh = new DataView(new ArrayBuffer(30));
+      lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true);
+      lh.setUint16(10, dosTime, true); lh.setUint16(12, dosDate, true);
+      lh.setUint32(14, crc, true); lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true);
+      lh.setUint16(26, name.length, true);
+      parts.push(new Uint8Array(lh.buffer), name, data);
+      const ch = new DataView(new ArrayBuffer(46));
+      ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true);
+      ch.setUint16(12, dosTime, true); ch.setUint16(14, dosDate, true);
+      ch.setUint32(16, crc, true); ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true);
+      ch.setUint16(28, name.length, true); ch.setUint32(42, offset, true);
+      central.push(new Uint8Array(ch.buffer), name);
+      offset += 30 + name.length + data.length;
+    });
+    const cdSize = central.reduce((n,c)=> n + c.length, 0);
+    const end = new DataView(new ArrayBuffer(22));
+    end.setUint32(0, 0x06054b50, true); end.setUint16(8, files.length, true); end.setUint16(10, files.length, true);
+    end.setUint32(12, cdSize, true); end.setUint32(16, offset, true);
+    return new Blob([...parts, ...central, new Uint8Array(end.buffer)], {type});
+  }
+  // zip 풀기: 엑셀이 다시 저장한 파일(deflate 압축)도 읽음
+  async function unzipFiles(buf){
+    const dv = new DataView(buf), u8 = new Uint8Array(buf), dec = new TextDecoder();
+    let e = buf.byteLength - 22;
+    while(e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+    if(e < 0) throw new Error('zip 파일이 아님');
+    const count = dv.getUint16(e+10, true);
+    let p = dv.getUint32(e+16, true);
+    const out = {};
+    for(let i=0; i<count; i++){
+      const method = dv.getUint16(p+10, true), csize = dv.getUint32(p+20, true);
+      const nlen = dv.getUint16(p+28, true), xlen = dv.getUint16(p+30, true), clen = dv.getUint16(p+32, true);
+      const local = dv.getUint32(p+42, true);
+      const name = dec.decode(u8.subarray(p+46, p+46+nlen));
+      const start = local + 30 + dv.getUint16(local+26, true) + dv.getUint16(local+28, true);
+      const raw = u8.subarray(start, start+csize);
+      if(method===0) out[name] = raw;
+      else if(method===8) out[name] = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+      p += 46 + nlen + xlen + clen;
+    }
+    return out;
+  }
+  const xmlEsc = s=> String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+  function colName(i){ let s = ''; i++; while(i>0){ const m = (i-1) % 26; s = String.fromCharCode(65+m) + s; i = Math.floor((i-1)/26); } return s; }
+  function colIndex(letters){ let n = 0; for(const ch of letters) n = n*26 + (ch.charCodeAt(0)-64); return n-1; }
+  const XLSX_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  // sheets: [{name, widths:[...], rows:[[...], ...]}] — 첫 행은 제목 줄(색·굵게, 틀 고정)
+  function buildXlsx(sheets){
+    const NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+    const RNS = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+    const head = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+    const sheetXml = sh=>{
+      const rows = sh.rows.map((row, ri)=> `<row r="${ri+1}">${row.map((v, ci)=>{
+        const ref = colName(ci) + (ri+1), s = ri===0 ? ' s="1"' : ' s="2"';
+        if(v===null || v===undefined || v==='') return `<c r="${ref}"${s}/>`;
+        if(typeof v === 'number') return `<c r="${ref}"${s}><v>${v}</v></c>`;
+        return `<c r="${ref}"${s} t="inlineStr"><is><t xml:space="preserve">${xmlEsc(v)}</t></is></c>`;
+      }).join('')}</row>`).join('');
+      const cols = sh.widths ? `<cols>${sh.widths.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('')}</cols>` : '';
+      return `${head}<worksheet xmlns="${NS}"><sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView workbookViewId="0"><pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>${cols}<sheetData>${rows}</sheetData><pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup paperSize="9" orientation="landscape" fitToWidth="1" fitToHeight="0"/></worksheet>`;
+    };
+    const font = b=> `<font>${b ? '<b/>' : ''}<sz val="11"/>${b ? '<color rgb="FFFFFFFF"/>' : ''}<name val="맑은 고딕"/><family val="3"/><charset val="129"/></font>`;
+    const line = `<left style="thin"><color rgb="FFBFBFBF"/></left><right style="thin"><color rgb="FFBFBFBF"/></right><top style="thin"><color rgb="FFBFBFBF"/></top><bottom style="thin"><color rgb="FFBFBFBF"/></bottom><diagonal/>`;
+    const styles = `${head}<styleSheet xmlns="${NS}"><fonts count="2">${font(false)}${font(true)}</fonts>`
+      + `<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF4D3FE0"/><bgColor indexed="64"/></patternFill></fill></fills>`
+      + `<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border>${line}</border></borders>`
+      + `<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>`
+      + `<cellXfs count="3"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>`
+      + `<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf>`
+      + `<xf numFmtId="49" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center"/></xf></cellXfs>`
+      + `<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+    const files = [
+      {name:'[Content_Types].xml', text:`${head}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((s,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}</Types>`},
+      {name:'_rels/.rels', text:`${head}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${RNS}/officeDocument" Target="xl/workbook.xml"/></Relationships>`},
+      {name:'xl/workbook.xml', text:`${head}<workbook xmlns="${NS}" xmlns:r="${RNS}"><sheets>${sheets.map((s,i)=>`<sheet name="${xmlEsc(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join('')}</sheets></workbook>`},
+      {name:'xl/_rels/workbook.xml.rels', text:`${head}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((s,i)=>`<Relationship Id="rId${i+1}" Type="${RNS}/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join('')}<Relationship Id="rId${sheets.length+1}" Type="${RNS}/styles" Target="styles.xml"/></Relationships>`},
+      {name:'xl/styles.xml', text:styles},
+      ...sheets.map((s,i)=>({name:`xl/worksheets/sheet${i+1}.xml`, text:sheetXml(s)})),
+    ];
+    return zipFiles(files, XLSX_TYPE);
+  }
+  // 엑셀 파일 → {시트 이름: [[칸 값...], ...]}
+  async function readXlsx(buf){
+    const files = await unzipFiles(buf), dec = new TextDecoder();
+    const parse = name=> files[name] ? new DOMParser().parseFromString(dec.decode(files[name]), 'application/xml') : null;
+    const all = (node, tag)=> Array.from(node.getElementsByTagNameNS('*', tag));
+    const textOf = node=> all(node, 't').filter(t=> t.parentNode.localName !== 'rPh').map(t=> t.textContent).join('');
+    const ss = parse('xl/sharedStrings.xml');
+    const shared = ss ? all(ss, 'si').map(textOf) : [];
+    const wb = parse('xl/workbook.xml'), rels = parse('xl/_rels/workbook.xml.rels');
+    if(!wb || !rels) throw new Error('엑셀 파일이 아님');
+    const target = {};
+    all(rels, 'Relationship').forEach(r=> target[r.getAttribute('Id')] = r.getAttribute('Target'));
+    const out = {};
+    all(wb, 'sheet').forEach(sh=>{
+      const rid = sh.getAttribute('r:id') || sh.getAttributeNS('http://schemas.openxmlformats.org/officeDocument/2006/relationships', 'id');
+      const t = target[rid] || '';
+      const doc = parse(t.startsWith('/') ? t.slice(1) : 'xl/' + t.replace(/^\.\//, ''));
+      if(!doc) return;
+      const rows = [];
+      all(doc, 'row').forEach((row, k)=>{
+        const r = row.getAttribute('r') ? parseInt(row.getAttribute('r'),10)-1 : k;
+        const arr = [];
+        all(row, 'c').forEach((c, j)=>{
+          const ref = c.getAttribute('r');
+          const col = ref ? colIndex(ref.replace(/\d+/g, '')) : j;
+          const type = c.getAttribute('t'), vEl = all(c, 'v')[0];
+          let v = '';
+          if(type==='inlineStr') v = textOf(c);
+          else if(type==='s') v = vEl ? (shared[parseInt(vEl.textContent,10)] || '') : '';
+          else if(type==='str' || type==='b' || type==='e') v = vEl ? vEl.textContent : '';
+          else v = vEl ? Number(vEl.textContent) : '';
+          arr[col] = v;
+        });
+        rows[r] = arr;
+      });
+      out[sh.getAttribute('name')] = rows;
+    });
+    return out;
+  }
+
+  // ----- 백업: 엑셀 파일 하나에 기록 시트 + 교과 분류 시트 -----
+  const BACKUP_HEAD = ['날짜','요일','교시','학년-반','과목','결근 교사','사유','구분','대상 날짜','대상 요일','대상 교시','대상 과목','수업 교사','비고','기록 번호'];
+  const META_HEAD = ['교사','담당 과목','교과 분류','내선번호'];
+  function backupBlob(){
+    const recRows = sortRecs(records).map(r=> [r.date, dayOf(r.date), r.period, r.cls, r.subject, r.absent, r.reason, KIND_LABEL[kindOf(r)],
+      r.subDate, dayOf(r.subDate), r.subPeriod, r.subSubject, r.sub, r.note, r.id]);
+    const metaRows = teacherNames.map(n=> [n, Object.keys(subjectCounts(n)).join(', '), catOf(n), extOf(n)]);
+    return buildXlsx([
+      {name:'결보강기록', widths:[12,6,6,8,12,10,8,10,12,8,8,12,10,10,16], rows:[BACKUP_HEAD, ...recRows]},
+      {name:'교과분류', widths:[10,40,12,10], rows:[META_HEAD, ...metaRows]},
+    ]);
+  }
   function saveBackup(){
-    download(`결보강기록_${todayStr()}.json`, JSON.stringify({version:1, savedAt:new Date().toISOString(), records, teacherMeta}, null, 1), 'application/json');
+    download(`결보강기록_백업_${todayStr()}.xlsx`, backupBlob());
   }
   document.getElementById('backupSave').addEventListener('click', saveBackup);
 
@@ -1746,34 +1900,93 @@
     logFrom.value = v; logTo.value = v;
     renderLog();
   }));
+  // ----- 백업 불러오기: 엑셀 백업(엑셀에서 고쳐 저장한 것 포함)과 예전 json 백업 -----
+  // 엑셀 날짜(숫자)·'2026.10.22'·'2026-10-22' 모두 2026-10-22로
+  function toISO(v){
+    if(typeof v === 'number' && v > 20000){
+      const d = new Date(Math.round((v - 25569) * 86400000));
+      return `${d.getUTCFullYear()}-${pad2(d.getUTCMonth()+1)}-${pad2(d.getUTCDate())}`;
+    }
+    const m = String(v==null ? '' : v).trim().match(/^(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+    return m ? `${m[1]}-${pad2(m[2])}-${pad2(m[3])}` : '';
+  }
+  function recordsFromRows(rows){
+    const head = (rows[0] || []).map(h=> String(h==null ? '' : h).trim());
+    const out = [];
+    rows.slice(1).forEach(row=>{
+      if(!row) return;
+      const get = name=>{ const i = head.indexOf(name); const v = i<0 ? '' : row[i]; return v==null ? '' : String(v).trim(); };
+      const date = toISO(row[head.indexOf('날짜')]);
+      const absent = get('결근 교사'), sub = get('수업 교사'), period = parseInt(get('교시'),10);
+      if(!date || !absent || !sub || !period) return;
+      const label = get('구분');
+      const kind = label.includes('교체') ? 'swap' : label.includes('타과') ? 'other' : 'same';
+      const subDate = toISO(row[head.indexOf('대상 날짜')]) || date;
+      out.push({id: get('기록 번호') || uid(), absent, date, day:dayOf(date), period, cls:get('학년-반'), subject:get('과목'),
+        reason:get('사유'), type: kind==='swap' ? '교체' : '보강', kind, sub, subDate, subDay:dayOf(subDate),
+        subPeriod: parseInt(get('대상 교시'),10) || period, subSubject: get('대상 과목') || get('과목'),
+        note: get('비고') || KIND_NOTE[kind], createdAt: Date.now()});
+    });
+    return out;
+  }
+  function metaFromRows(rows){
+    const head = (rows[0] || []).map(h=> String(h==null ? '' : h).trim());
+    const meta = {};
+    rows.slice(1).forEach(row=>{
+      if(!row) return;
+      const get = name=>{ const i = head.indexOf(name); const v = i<0 ? '' : row[i]; return v==null ? '' : String(v).trim(); };
+      const n = get('교사'); if(!teacherNames.includes(n)) return;
+      const m = {};
+      const cat = get('교과 분류'); if(CATEGORIES.includes(cat) && cat !== autoCategory(n)) m.cat = cat;
+      const ext = get('내선번호'); if(ext) m.ext = ext;
+      if(Object.keys(m).length) meta[n] = m;
+    });
+    return meta;
+  }
+  function mergeBackup(list, meta){
+    const ids = new Set(records.map(r=> r.id));
+    const slots = new Set(records.map(r=> `${r.absent}|${r.date}|${r.period}`));
+    const added = list.filter(r=> r && r.id && !ids.has(r.id) && !slots.has(`${r.absent}|${r.date}|${r.period}`));
+    records = records.concat(added);
+    if(meta && typeof meta === 'object'){
+      Object.keys(meta).forEach(n=>{ teacherMeta[n] = Object.assign({}, meta[n], teacherMeta[n] || {}); });
+    }
+    saveRecords(); saveMeta();
+    buildLogTeacherSelect(); renderLog(); updateStats();
+    return added.length;
+  }
   document.getElementById('backupLoadBtn').addEventListener('click', ()=> document.getElementById('backupLoad').click());
-  document.getElementById('backupLoad').addEventListener('change', (e)=>{
+  document.getElementById('backupLoad').addEventListener('change', async (e)=>{
     const f = e.target.files[0]; if(!f) return;
-    const reader = new FileReader();
-    reader.onload = ()=>{
-      try{
-        const obj = JSON.parse(reader.result);
+    try{
+      const buf = await f.arrayBuffer();
+      const u8 = new Uint8Array(buf);
+      let added;
+      if(u8[0]===0x50 && u8[1]===0x4B){          // 'PK' → 엑셀 파일
+        const book = await readXlsx(buf);
+        const recRows = book['결보강기록'] || Object.values(book).find(rows=> rows[0] && rows[0].includes('결근 교사'));
+        if(!recRows) throw new Error('결보강기록 시트 없음');
+        added = mergeBackup(recordsFromRows(recRows), book['교과분류'] ? metaFromRows(book['교과분류']) : null);
+      } else {                                     // 예전 json 백업
+        const obj = JSON.parse(new TextDecoder().decode(u8));
         if(!Array.isArray(obj.records)) throw new Error('records 없음');
-        const ids = new Set(records.map(r=> r.id));
-        const added = obj.records.filter(r=> r && r.id && !ids.has(r.id));
-        records = records.concat(added);
-        if(obj.teacherMeta && typeof obj.teacherMeta === 'object') teacherMeta = Object.assign({}, obj.teacherMeta, teacherMeta);
-        saveRecords(); saveMeta();
-        buildLogTeacherSelect(); renderLog();
-        alert(`백업에서 기록 ${added.length}건을 추가했습니다. (이미 있던 기록은 그대로 둡니다)`);
-      }catch(err){ alert('백업 파일을 읽지 못했습니다. 이 사이트에서 저장한 .json 파일인지 확인해 주세요.'); }
-      e.target.value = '';
-    };
-    reader.readAsText(f, 'utf-8');
+        added = mergeBackup(obj.records, obj.teacherMeta);
+      }
+      alert(`백업에서 기록 ${added}건을 추가했습니다. (이미 있던 기록은 그대로 둡니다)`);
+    }catch(err){
+      alert('백업 파일을 읽지 못했습니다. 이 사이트에서 「백업 파일 저장」으로 받은 엑셀 파일인지 확인해 주세요.');
+    }
+    e.target.value = '';
   });
-  document.getElementById('csvSave').addEventListener('click', ()=>{
+
+  // ----- 엑셀 파일로 저장: 지금 표에 보이는 기록을 일지 형식으로 -----
+  document.getElementById('xlsxSave').addEventListener('click', ()=>{
     const list = filteredRecords();
     if(!list.length){ alert('저장할 기록이 없습니다.'); return; }
-    const head = ['결근교사','월/일','요일','교시','학년-반','과목명','대상 월/일','대상 요일','대상 교시','대상 과목명','수업교사','구분','교체사유','비고'];
-    const q = v=> `"${String(v==null?'':v).replace(/"/g,'""')}"`;
-    const lines = [head.map(q).join(',')].concat(list.map(r=> [r.absent, md(r.date), dayOf(r.date), r.period, r.cls, r.subject,
-      md(r.subDate), dayOf(r.subDate), r.subPeriod, r.subSubject, r.sub, r.type, r.reason, r.note].map(q).join(',')));
-    download(`결보강일지_${todayStr()}.csv`, '﻿' + lines.join('\r\n'), 'text/csv');
+    const head = ['연번','결근 교사','월/일','(요일)','교시','학년-반','과목명','구분','대상 월/일','(요일)','교시','과목명','수업교사','교체사유','비고'];
+    const rows = list.map((r,i)=> [i+1, r.absent, md(r.date), dayOf(r.date), r.period, r.cls, r.subject, KIND_LABEL[kindOf(r)],
+      md(r.subDate), dayOf(r.subDate), r.subPeriod, r.subSubject, r.sub, r.reason, r.note]);
+    download(`결보강일지_${todayStr()}.xlsx`, buildXlsx([{name:'결보강일지', widths:[6,10,8,7,6,8,12,10,10,7,6,12,10,10,10], rows:[head, ...rows]}]));
   });
 
   function updateStats(){ document.getElementById('statRecords').textContent = records.length; }

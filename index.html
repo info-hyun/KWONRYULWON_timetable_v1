@@ -1,0 +1,1791 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>여수여자고 시간표</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  :root{
+    --bg:#f5f6fe; --card:#ffffff; --card-2:#f9f9ff; --ink:#20223a; --muted:#71759e; --muted-2:#a5a9d1;
+    --primary:#6a5cf5; --primary-dark:#4d3fe0; --primary-light:#eee9ff; --primary-soft:#dcd4fb;
+    --line:#e8e8f7; --line-strong:#d3d3ef; --pill:#f0edff;
+    --warn-bg:#fff1de; --warn-fg:#b3610f;
+    --shadow:0 1px 2px rgba(60,50,120,.05), 0 10px 26px -14px rgba(60,50,120,.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#15162c; --card:#1d1e3a; --card-2:#232445; --ink:#eeeefb; --muted:#a3a6d4; --muted-2:#71749e;
+      --primary:#a196ff; --primary-dark:#7a6cf0; --primary-light:#2a2b52; --primary-soft:#37396b;
+      --line:#2d2f57; --line-strong:#3c3e6b; --pill:#252748;
+      --warn-bg:#3a2a10; --warn-fg:#f0b25f;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 26px -14px rgba(0,0,0,.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#15162c; --card:#1d1e3a; --card-2:#232445; --ink:#eeeefb; --muted:#a3a6d4; --muted-2:#71749e;
+    --primary:#a196ff; --primary-dark:#7a6cf0; --primary-light:#2a2b52; --primary-soft:#37396b;
+    --line:#2d2f57; --line-strong:#3c3e6b; --pill:#252748;
+    --warn-bg:#3a2a10; --warn-fg:#f0b25f;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 26px -14px rgba(0,0,0,.55);
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{background:var(--bg); color:var(--ink); font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",-apple-system,sans-serif; font-size:15px; line-height:1.5;}
+  .mono{font-family:"JetBrains Mono","Noto Sans KR",monospace; font-variant-numeric:tabular-nums;}
+  .wrap{max-width:1040px; margin:0 auto; padding:20px 18px 70px;}
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+  h1,h2,h3{text-wrap:balance;}
+  ::selection{background:var(--primary-soft);}
+
+  /* ---------- Top nav ---------- */
+  .topbar{margin-bottom:22px; position:sticky; top:0; background:var(--bg); z-index:30; padding:16px 0 0;}
+  .topbar-row1{display:flex; align-items:center; gap:12px;}
+  .brand{display:flex; align-items:center; gap:10px; font-weight:900; font-size:19px; color:var(--ink); white-space:nowrap; letter-spacing:-.2px;}
+  .brand .badge{width:34px; height:34px; border-radius:10px; background:linear-gradient(155deg, var(--primary), var(--primary-dark)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:900; flex-shrink:0;}
+  .brand .sub{font-size:12px; font-weight:700; color:var(--muted); letter-spacing:.2px;}
+  .spacer{flex:1;}
+  .theme-toggle{border:1px solid var(--line); background:var(--card); color:var(--muted); border-radius:9px; padding:8px 12px; font-size:13px; font-weight:600;}
+  .theme-toggle:hover{border-color:var(--line-strong); color:var(--ink);}
+
+  .topbar-row2{display:flex; align-items:center; gap:2px; margin-top:14px; border-bottom:1px solid var(--line);}
+  .tabs{display:flex; gap:2px;}
+  .tab-btn{border:none; background:transparent; padding:12px 4px; margin-right:22px; font-weight:700; font-size:14.5px; color:var(--muted); transition:color .15s; border-bottom:2.5px solid transparent; display:flex; align-items:center; gap:7px;}
+  .tab-btn .ti{font-size:15px;}
+  .tab-btn.active{color:var(--primary); border-bottom-color:var(--primary);}
+  .tab-btn:not(:disabled):not(.active):hover{color:var(--ink);}
+  .tab-btn:disabled{opacity:.4; cursor:not-allowed;}
+
+  /* ---------- Home ---------- */
+  .hero{background:var(--card); border:1px solid var(--line); color:var(--ink); border-radius:20px; padding:30px 32px; margin-bottom:24px; box-shadow:var(--shadow); display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;}
+  .hero .semester{font-size:12.5px; color:var(--primary); font-weight:800; letter-spacing:1.2px; text-transform:uppercase;}
+  .hero h1{margin:8px 0 9px; font-size:27px; letter-spacing:-.3px;}
+  .hero p{margin:0; color:var(--muted); font-size:14.5px; line-height:1.6; max-width:46ch;}
+  .stat-row{display:flex; gap:10px; flex-wrap:wrap;}
+  .stat{background:var(--primary-light); border-radius:14px; padding:14px 22px; font-size:12.5px; color:var(--primary); font-weight:700; text-align:center;}
+  .stat b{font-size:22px; display:block; font-family:"JetBrains Mono",monospace; color:var(--ink);}
+  .home-cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px;}
+  .home-card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; text-align:left; box-shadow:var(--shadow);}
+  .home-card .ico{font-size:26px; margin-bottom:10px;}
+  .home-card h3{margin:0 0 6px; font-size:16.5px;}
+  .home-card p{margin:0; color:var(--muted); font-size:13.5px; line-height:1.55; min-height:41px;}
+  .home-card button{margin-top:16px; border:none; background:var(--primary); color:#fff; padding:10px 16px; border-radius:9px; font-weight:700; font-size:13.5px; width:100%;}
+  .home-card.disabled{opacity:.7;}
+  .home-card.disabled button{background:var(--muted-2); color:var(--bg);}
+
+  /* ---------- Controls row ---------- */
+  .controls{display:flex; align-items:center; gap:14px; flex-wrap:wrap; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 14px; margin-bottom:12px; box-shadow:var(--shadow);}
+  .field-label{font-size:11.5px; font-weight:700; color:var(--muted-2); text-transform:uppercase; letter-spacing:.4px; margin-right:2px;}
+  .picker-group{display:flex; align-items:center; gap:8px;}
+  .picker-group .glabel{font-size:11px; font-weight:800; color:var(--primary); background:var(--primary-light); padding:4px 9px; border-radius:7px; white-space:nowrap;}
+  .picker-group.secondary .glabel{color:var(--muted-2); background:var(--pill);}
+  .search-wrap{position:relative;}
+  .search-wrap input{border:1.5px solid var(--primary-soft); background:var(--bg); color:var(--ink); border-radius:9px; padding:9px 12px 9px 32px; font-size:14px; width:160px; font-weight:600;}
+  .search-wrap input:focus, .picker-select:focus{outline:2px solid var(--primary-soft); outline-offset:1px; border-color:var(--primary);}
+  .search-wrap .search-ico{position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:13px; opacity:.6; pointer-events:none;}
+  .picker-select{border:1px dashed var(--line-strong); background:var(--card); color:var(--ink); border-radius:9px; padding:8px 9px; font-size:13.5px; font-weight:600; min-width:110px;}
+  .picker-select:hover{border-color:var(--muted-2);}
+  .nav-arrow{border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:9px; width:34px; height:34px; font-size:15px;}
+  .nav-arrow:hover{border-color:var(--line-strong);}
+  .divider-v{width:1px; height:26px; background:var(--line); margin:0 2px;}
+  .autocomplete{position:absolute; top:calc(100% + 4px); left:0; right:0; background:var(--card); border:1px solid var(--line); border-radius:10px; max-height:240px; overflow:auto; z-index:20; box-shadow:0 12px 28px rgba(0,0,0,.16); display:none;}
+  .autocomplete div{padding:8px 12px; font-size:14px; cursor:pointer;}
+  .autocomplete div:hover, .autocomplete div.hi{background:var(--primary-light);}
+  .autocomplete .ac-hint{padding:6px 12px; font-size:11px; color:var(--muted-2); border-top:1px solid var(--line);}
+  .btn-ghost{border:1px solid var(--line); background:var(--card); color:var(--ink); padding:9px 14px; border-radius:9px; font-size:13px; font-weight:700;}
+  .btn-ghost:hover{border-color:var(--line-strong); background:var(--card-2);}
+  .btn-primary{border:none; background:var(--primary); color:#fff; padding:9px 16px; border-radius:9px; font-size:13px; font-weight:700;}
+  .btn-primary:hover{background:var(--primary-dark);}
+  .hint{color:var(--muted); font-size:12.5px; margin:0 0 14px; text-align:center;}
+
+  /* ---------- Card ---------- */
+  .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:24px 26px 28px; box-shadow:var(--shadow);}
+  .card-top{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; border-bottom:2px solid var(--ink); padding-bottom:16px; margin-bottom:18px;}
+  .card-top .sem{color:var(--primary); font-weight:800; font-size:12.5px; letter-spacing:.3px; width:100%;}
+  .card-top .who{font-size:25px; font-weight:900; letter-spacing:-.3px;}
+  .card-top .suffix{color:var(--muted); font-size:15px; font-weight:600;}
+  .card-top .tags{margin-left:auto; display:flex; gap:6px; flex-wrap:wrap;}
+  .tag{background:var(--primary-light); color:var(--primary); font-size:12px; font-weight:700; padding:5px 11px; border-radius:999px;}
+
+  .table-scroll{overflow-x:auto;}
+  table.grid{width:100%; min-width:560px; table-layout:fixed; border-collapse:separate; border-spacing:6px;}
+  table.grid th{background:var(--primary-dark); color:#fff; padding:10px 0; font-size:13.5px; font-weight:700; border-radius:8px;}
+  table.grid th.period-col{width:48px; background:transparent; color:var(--muted-2); font-size:11px; font-weight:700;}
+  table.grid td.period{text-align:center; font-weight:700; color:var(--muted); font-size:13.5px; font-family:"JetBrains Mono",monospace;}
+  table.grid td.cell{border-radius:10px; height:60px; text-align:center; vertical-align:middle; padding:2px 4px; border-left:4px solid transparent; overflow:hidden;}
+  table.grid td.cell.empty{background:var(--bg);}
+  table.grid td.cell.blocked{background:transparent;}
+  .cell .subj{font-weight:800; font-size:13.5px; line-height:1.2; overflow-wrap:break-word; word-break:keep-all;}
+  .cell .sub{font-size:11px; font-weight:700; opacity:.85; margin-top:2px; overflow-wrap:break-word; word-break:keep-all; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+
+  /* ---------- 보강·교체 ---------- */
+  .sub-controls{display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; margin-bottom:16px; box-shadow:var(--shadow);}
+  .sub-field{display:flex; flex-direction:column; gap:6px;}
+  .sub-field label{font-size:11.5px; font-weight:700; color:var(--muted-2); text-transform:uppercase; letter-spacing:.4px;}
+  .day-pick{display:flex; gap:4px; background:var(--pill); border-radius:9px; padding:3px;}
+  .day-pick button{border:none; background:transparent; padding:8px 14px; border-radius:7px; font-weight:700; font-size:13.5px; color:var(--muted);}
+  .day-pick button.active{background:var(--primary); color:#fff;}
+  .sub-summary{color:var(--muted); font-size:13px;}
+
+  .period-block{background:var(--card); border:1px solid var(--line); border-radius:16px; margin-bottom:14px; overflow:hidden; box-shadow:var(--shadow);}
+  .period-block .pb-head{display:flex; align-items:center; gap:10px; padding:14px 18px; background:var(--card-2); border-bottom:1px solid var(--line);}
+  .pb-head .pnum{font-family:"JetBrains Mono",monospace; font-weight:800; font-size:15px; background:var(--primary); color:#fff; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center;}
+  .pb-head .pclass{font-weight:800; font-size:15px;}
+  .pb-head .psubj{color:var(--muted); font-size:13.5px;}
+  .pb-body{display:grid; grid-template-columns:1fr 1fr; gap:0;}
+  @media (max-width:720px){ .pb-body{grid-template-columns:1fr;} }
+  .pb-col{padding:14px 18px;}
+  .pb-col + .pb-col{border-left:1px solid var(--line);}
+  @media (max-width:720px){ .pb-col + .pb-col{border-left:none; border-top:1px solid var(--line);} }
+  .pb-col h4{margin:0 0 10px; font-size:12px; font-weight:800; color:var(--muted-2); text-transform:uppercase; letter-spacing:.4px;}
+  .cand-group-label{font-size:11.5px; font-weight:700; color:var(--primary); margin:10px 0 6px;}
+  .cand-group-label:first-child{margin-top:0;}
+  .cand-chips{display:flex; flex-wrap:wrap; gap:6px;}
+  .chip{display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:700; padding:5px 10px 5px 11px; border-radius:999px; background:var(--primary-light); color:var(--primary); white-space:nowrap; line-height:1.3;}
+  .chip .h{font-weight:600; opacity:.7; font-size:10.5px;}
+  .chip.load-high{background:var(--warn-bg); color:var(--warn-fg);}
+  .chip.other{background:var(--pill); color:var(--ink);}
+  .more-wrap{width:100%; margin-top:2px;}
+  .more-wrap summary{list-style:none; cursor:pointer; display:inline-flex; align-items:center; gap:4px; border:1px dashed var(--line-strong); color:var(--muted); font-size:12px; font-weight:700; padding:5px 11px; border-radius:999px;}
+  .more-wrap summary::-webkit-details-marker{display:none;}
+  .more-wrap[open] summary{margin-bottom:6px;}
+  .cand-empty{color:var(--muted-2); font-size:13px; padding:6px 0;}
+  .swap-row{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); font-size:13.5px;}
+  .swap-row:last-child{border-bottom:none;}
+  .swap-p{font-family:"JetBrains Mono",monospace; font-weight:800; background:var(--pill); border-radius:7px; width:26px; height:26px; display:flex; align-items:center; justify-content:center; font-size:12.5px; flex-shrink:0;}
+  .swap-p.wide{width:auto; min-width:36px; padding:0 8px; gap:1px; font-size:12px; background:var(--primary-light); color:var(--primary);}
+  .swap-more{margin-top:8px;}
+  .swap-more[open]{margin-bottom:4px;}
+  .swap-info b{font-weight:700;}
+  .swap-info span{color:var(--muted);}
+  .no-class{color:var(--muted); text-align:center; padding:40px 20px; background:var(--card); border:1px dashed var(--line); border-radius:16px;}
+
+  @page{margin:10mm;}
+  .card-mini{border:1px solid #ccc; border-radius:10px; padding:8px 10px; break-inside:avoid;}
+  .card-mini .m-top{display:flex; align-items:baseline; gap:6px; border-bottom:1.5px solid #333; padding-bottom:5px; margin-bottom:5px;}
+  .card-mini .m-name{font-weight:800; font-size:13px;}
+  .card-mini .m-sem{font-size:9px; color:#3c6b4a; font-weight:800;}
+  table.mini{width:100%; border-collapse:collapse; font-size:8.5px;}
+  table.mini th{background:#294b34; color:#fff; padding:2px 0;}
+  table.mini td{text-align:center; padding:2px 1px; border:1px solid #ddd;}
+  .cards-grid{display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:min-content; gap:8px;}
+
+  table.master{border-collapse:collapse; width:100%; font-size:9px;}
+  table.master th{background:#294b34; color:#fff; padding:3px 1px;}
+  table.master td{border:1px solid #ddd; text-align:center; padding:2px 1px; min-width:34px;}
+  table.master td.name{text-align:left; font-weight:700; white-space:nowrap; padding-left:4px;}
+  /* ---------- 결보강 종류별 색: 동과 보강(초록) · 타과 보강(파랑) · 수업 교체(주황) · 연강 경고(빨강) ---------- */
+  :root{
+    --same-bg:#e3f5ea; --same-fg:#17804a; --same-line:#9ad5b2;
+    --other-bg:#e6effd; --other-fg:#1f5fc4; --other-line:#a6c3f2;
+    --swap-bg:#fff0dc; --swap-fg:#b2590a; --swap-line:#efc189;
+    --danger-bg:#fde6e5; --danger-fg:#c2312b;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --same-bg:#173a28; --same-fg:#7fdaa6; --same-line:#2c6646;
+      --other-bg:#1a2c4a; --other-fg:#94bcf7; --other-line:#33507f;
+      --swap-bg:#3a2a10; --swap-fg:#f0b25f; --swap-line:#6b4d1d;
+      --danger-bg:#45201f; --danger-fg:#f59a94;
+    }
+  }
+  :root[data-theme="dark"]{
+    --same-bg:#173a28; --same-fg:#7fdaa6; --same-line:#2c6646;
+    --other-bg:#1a2c4a; --other-fg:#94bcf7; --other-line:#33507f;
+    --swap-bg:#3a2a10; --swap-fg:#f0b25f; --swap-line:#6b4d1d;
+    --danger-bg:#45201f; --danger-fg:#f59a94;
+  }
+  .k-same{--k-bg:var(--same-bg); --k-fg:var(--same-fg); --k-line:var(--same-line);}
+  .k-other{--k-bg:var(--other-bg); --k-fg:var(--other-fg); --k-line:var(--other-line);}
+  .k-swap{--k-bg:var(--swap-bg); --k-fg:var(--swap-fg); --k-line:var(--swap-line);}
+
+  /* ---------- 결보강 배정 ---------- */
+  .date-range{display:flex; align-items:center; gap:6px; flex-wrap:wrap; color:var(--muted);}
+  .date-range input, .sub-select{border:1px solid var(--line-strong); background:var(--card); color:var(--ink); border-radius:9px; padding:8px 10px; font-size:13.5px; font-weight:600; font-family:inherit;}
+  .meta-panel{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:10px 16px; margin-bottom:14px; box-shadow:var(--shadow);}
+  .meta-panel summary{cursor:pointer; font-weight:700; font-size:13px; color:var(--muted);}
+  .meta-panel .meta-hint{color:var(--muted); font-size:12px; margin:10px 0 0;}
+  .meta-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:6px 16px; margin-top:12px;}
+  .meta-item{display:flex; align-items:center; gap:6px; font-size:13px;}
+  .meta-item b{min-width:50px;}
+  .meta-item .ms{color:var(--muted); font-size:11.5px; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .meta-item select, .meta-item input{border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:7px; padding:4px 6px; font-size:12.5px; font-family:inherit;}
+  .meta-item input{width:62px;}
+  .date-bar{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;}
+  .date-bar:empty{display:none;}
+  .date-chip{border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:6px 12px; font-weight:700; font-size:13px;}
+  .date-chip span{color:var(--muted); font-weight:600; font-size:11.5px; margin-left:4px;}
+  .date-chip.active{background:var(--primary); border-color:var(--primary); color:#fff;}
+  .date-chip.active span{color:#fff; opacity:.85;}
+  .sub-head{margin-bottom:14px;}
+  .sh-title{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:14px;}
+  .sh-title b{font-size:20px; font-weight:900; letter-spacing:-.2px;}
+  .sh-title span{color:var(--muted); font-size:13px; font-weight:600;}
+  .part-row{display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:12px; font-size:12.5px; color:var(--muted); font-weight:700;}
+  .part-row button{border:1px solid var(--line-strong); background:var(--card); color:var(--ink); border-radius:8px; padding:5px 10px; font-weight:700; font-size:12.5px;}
+  .part-row button.on{background:var(--warn-bg); border-color:var(--warn-fg); color:var(--warn-fg);}
+  .period-tabs{display:flex; gap:8px; flex-wrap:wrap;}
+  .ptab{border:1.5px solid var(--line-strong); background:var(--card); color:var(--ink); border-radius:12px; padding:8px 14px; text-align:left; min-width:96px; line-height:1.35;}
+  .ptab b{display:block; font-size:14.5px;}
+  .ptab small{display:block; font-size:11.5px; color:var(--muted); font-weight:600;}
+  .ptab small.to{color:var(--k-fg, var(--primary)); font-weight:800;}
+  .ptab.done{border-color:var(--k-fg, var(--primary)); background:var(--k-bg, var(--card));}
+  .ptab.active{background:var(--primary); border-color:var(--primary); color:#fff; box-shadow:0 0 0 3px var(--primary-soft);}
+  .ptab.active small{color:#fff; opacity:.9;}
+  .ptab:disabled{opacity:.4; cursor:not-allowed;}
+  .ptab.nonsub:not(.active){opacity:.65;}
+  .tt{display:inline-block; border-radius:999px; padding:0 7px; margin-left:3px; font-size:10.5px; font-weight:800; background:var(--k-fg); color:var(--card); vertical-align:1px;}
+  .kind-legend{display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; font-size:12px; color:var(--muted); font-weight:600;}
+  .kind-legend span{display:inline-flex; align-items:center; gap:5px;}
+  .kind-legend i{width:11px; height:11px; border-radius:3px; background:var(--k-fg); display:inline-block;}
+  .assigned-bar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 18px; background:var(--k-bg); color:var(--k-fg); font-weight:700; font-size:13.5px; border-bottom:1.5px solid var(--k-line);}
+  .assigned-bar .btn-ghost{margin-left:auto; padding:6px 12px;}
+  .cand-sections{display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:16px;}
+  .cand-sec{border:1.5px solid var(--k-line); border-radius:14px; overflow:hidden; background:var(--card); min-width:0;}
+  .cand-sec.wide{grid-column:1 / -1;}
+  @media (max-width:760px){ .cand-sections{grid-template-columns:1fr; padding:12px;} }
+  .sec-head{display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:10px 14px; background:var(--k-bg); color:var(--k-fg); border-bottom:1.5px solid var(--k-line);}
+  .sec-head .sec-ico{width:24px; height:24px; border-radius:7px; background:var(--k-fg); color:var(--card); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:12.5px; flex-shrink:0;}
+  .sec-head b{font-size:15.5px; font-weight:900;}
+  .sec-head .sec-count{font-weight:800; font-size:12px; background:var(--card); border:1px solid var(--k-line); border-radius:999px; padding:0 9px;}
+  .sec-head .sec-desc{flex-basis:100%; font-size:12px; font-weight:600; opacity:.85;}
+  .sec-body{padding:8px 10px 10px;}
+  .cand-row{display:flex; align-items:center; gap:8px; width:100%; border:1px solid transparent; background:transparent; color:var(--ink); padding:7px 8px; border-radius:9px; text-align:left; font-size:13.5px; flex-wrap:wrap;}
+  .cand-row + .cand-row{margin-top:2px;}
+  .cand-row:hover{background:var(--k-bg); border-color:var(--k-line);}
+  .cand-row.selected{background:var(--k-fg); border-color:var(--k-fg); color:var(--card);}
+  .cand-row.selected .badge-cat{background:rgba(255,255,255,.25); color:var(--card);}
+  .cand-row.selected .meta-txt, .cand-row.selected .load{color:var(--card);}
+  .cand-row.past{opacity:.55;}
+  .badge-cat{background:var(--k-bg, var(--primary-light)); color:var(--k-fg, var(--primary)); border-radius:999px; padding:1px 8px; font-size:11.5px; font-weight:700;}
+  .same-subj{border:1px solid var(--k-fg); color:var(--k-fg); border-radius:999px; padding:0 7px; font-size:11px; font-weight:800;}
+  .cand-row.selected .same-subj{border-color:var(--card); color:var(--card);}
+  .meta-txt{color:var(--muted); font-size:12px; font-weight:600;}
+  .warn{background:var(--danger-bg); color:var(--danger-fg); border-radius:999px; padding:1px 8px; font-size:11.5px; font-weight:700;}
+  .cand-row .load{margin-left:auto; color:var(--muted); font-size:12px; font-weight:600;}
+  .cat-group{display:flex; gap:8px; align-items:flex-start; padding:5px 0;}
+  .cat-group + .cat-group{border-top:1px dashed var(--line);}
+  .cat-label{flex-shrink:0; min-width:64px; text-align:center; background:var(--k-bg); color:var(--k-fg); border-radius:7px; padding:2px 8px; font-size:11.5px; font-weight:800; margin-top:3px;}
+  .inline-cands{display:flex; flex-wrap:wrap; gap:2px 4px;}
+  .inline-cand{border:1px solid transparent; background:transparent; color:var(--ink); font-weight:700; font-size:13px; padding:2px 6px; border-radius:7px;}
+  .inline-cand:hover{background:var(--k-bg); border-color:var(--k-line);}
+  .inline-cand.selected{background:var(--k-fg); color:var(--card);}
+  .inline-cand small{color:var(--muted); font-weight:600; font-size:11px;}
+  .inline-cand.selected small{color:var(--card);}
+  .inline-cand .w{color:var(--danger-fg);}
+  .sub-actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; margin:4px 0 14px;}
+
+  /* ---------- 쪽지 자동 완성 ---------- */
+  .k-absent{--k-bg:var(--primary-light); --k-fg:var(--primary); --k-line:var(--primary-soft);}
+  .msg-card{margin-bottom:14px;}
+  .msg-head{display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap; margin-bottom:14px;}
+  .mh-title{flex:1; min-width:260px; display:flex; flex-direction:column; gap:4px;}
+  .mh-title b{font-size:17px; font-weight:900;}
+  .mh-title span{color:var(--muted); font-size:12.5px; font-weight:600;}
+  .mh-opts{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .mh-sign{display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; color:var(--muted);}
+  .mh-sign input{border:1px solid var(--line-strong); background:var(--bg); color:var(--ink); border-radius:8px; padding:7px 10px; font-size:13px; font-family:inherit; width:170px;}
+  .msg-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr)); gap:12px;}
+  .msg-item{border:1px solid var(--line); border-radius:12px; background:var(--card-2); padding:10px 12px; display:flex; flex-direction:column; gap:8px; min-width:0;}
+  .mi-top{display:flex; align-items:center; gap:4px; flex-wrap:wrap;}
+  .mi-top b{font-size:14px; margin-right:4px;}
+  .mi-copy{padding:7px 16px;}
+  .mi-copy.copied, [data-copy].copied{background:var(--same-fg); color:var(--card);}
+  .msg-item textarea{width:100%; resize:vertical; border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:8px; padding:9px 10px; font-family:inherit; font-size:12.5px; line-height:1.55;}
+
+  /* ---------- 좁은 화면 ---------- */
+  .tabs{overflow-x:auto; scrollbar-width:none; min-width:0;}
+  .tab-btn, .theme-toggle{white-space:nowrap; flex-shrink:0;}
+  @media (max-width:600px){
+    .tab-btn{margin-right:12px; font-size:13.5px;}
+    .pb-head .meta-txt{display:none;}
+    .brand .sub{display:none;}
+    .theme-toggle{padding:7px 9px;}
+  }
+
+  /* ---------- 결보강 일지 ---------- */
+  table.log{width:100%; min-width:860px; border-collapse:collapse; font-size:13px;}
+  table.log th{font-size:11.5px; color:var(--muted); font-weight:800; text-align:left; padding:8px 6px; border-bottom:2px solid var(--line-strong); white-space:nowrap;}
+  table.log td{padding:7px 6px; border-bottom:1px solid var(--line); vertical-align:middle; white-space:nowrap;}
+  table.log input{border:1px solid var(--line); background:var(--bg); color:var(--ink); border-radius:6px; padding:4px 6px; font-size:12.5px; width:78px; font-family:inherit;}
+  .type-pill{border-radius:999px; padding:1px 8px; font-size:11.5px; font-weight:800; background:var(--k-bg); color:var(--k-fg); border:1px solid var(--k-line); white-space:nowrap;}
+  .del-btn{border:none; background:transparent; color:var(--muted); font-size:15px; padding:2px 6px; border-radius:6px;}
+  .del-btn:hover{background:var(--warn-bg); color:var(--warn-fg);}
+  .quick-range{padding:7px 11px; font-size:12.5px;}
+  .reset-card{display:flex; align-items:center; gap:16px; flex-wrap:wrap; background:var(--danger-bg); border:1.5px solid var(--danger-fg); border-radius:14px; padding:16px 18px; margin-bottom:14px;}
+  .rc-text{flex:1; min-width:240px; display:flex; flex-direction:column; gap:4px;}
+  .rc-text b{font-size:15.5px; font-weight:900; color:var(--danger-fg);}
+  .rc-text span{font-size:12.5px; color:var(--muted); font-weight:600;}
+  .rc-check{font-size:12.5px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:6px; margin-top:4px; cursor:pointer;}
+  .btn-reset{border:none; background:var(--danger-fg); color:var(--card); font-weight:900; font-size:18px; padding:16px 28px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:3px; min-width:230px;}
+  .btn-reset small{font-size:12px; font-weight:700; opacity:.9;}
+  .btn-reset:hover:not(:disabled){filter:brightness(1.08);}
+  .btn-reset:disabled{opacity:.45; cursor:not-allowed;}
+  @media (max-width:600px){ .btn-reset{width:100%;} }
+  .backup-row{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:14px;}
+  .backup-row .note{color:var(--muted); font-size:12px; flex-basis:100%;}
+
+  /* ---------- 결보강 및 수업교체일지 (인쇄 양식) ---------- */
+  /* 학교 엑셀 양식(A4 세로, 배율 67%, 가로·세로 가운데 맞춤)을 mm 단위로 그대로 옮김.
+     글자 크기는 엑셀 글자 크기 × 0.67, 칸 높이는 엑셀 행 높이(pt) × 0.67. */
+  .form-page{position:relative; width:210mm; height:296.5mm; overflow:hidden; background:#fff; color:#000; font-family:"Malgun Gothic","맑은 고딕","Noto Sans KR",sans-serif; break-after:page; page-break-after:always;}
+  .form-page:last-child{break-after:auto; page-break-after:auto;}
+  .fp-inner{position:absolute; left:11.75mm; top:22.1mm; width:191.5mm;}
+  .fp-title{height:11.7mm; display:flex; align-items:center; justify-content:center; font-size:24.1pt; font-weight:700; letter-spacing:.5pt; margin-bottom:6.2mm;}
+  .fp-line{display:grid; align-items:center; font-weight:700;}
+  .fp-line.l6{height:9.75mm;}
+  .fp-line.l7{height:9.75mm; margin-bottom:4.08mm;}
+  .fp-label{grid-column:2 / span 2; text-align:center; font-size:12.06pt;}
+  .fp-name{grid-column:5 / span 2; text-align:center; font-size:9.38pt;}
+  .fp-sign{grid-column:7; text-align:center; font-size:8.04pt;}
+  .fp-school{grid-column:11 / span 5; text-align:right; font-size:10.72pt; padding-right:.6mm;}
+  table.form{border-collapse:collapse; table-layout:fixed; width:191.5mm; border:1.35px solid #000;}
+  table.form th, table.form td{border:1px dotted #000; padding:0; text-align:center; vertical-align:middle; overflow:hidden; white-space:nowrap; font-weight:400; color:#000; background:#fff; border-radius:0; font-size:8.04pt; line-height:1.15;}
+  table.form tr.h1 th{height:6.2mm;}
+  table.form tr.h2 th{height:5.5mm;}
+  table.form th.c-idx{font-size:10.72pt;}
+  table.form th.c-grp{font-size:12.06pt;}
+  table.form th.dbl{border-bottom:3px double #000;}
+  table.form .g{border-left:1.35px solid #000; border-right:1.35px solid #000;}
+  table.form tbody td{height:9.218mm;}
+  table.form tbody tr:last-child td{border-bottom:1.35px solid #000;}
+  table.form td.idx{font-size:10.72pt;}
+  table.form td.sm{font-size:7.37pt;}
+  table.form td.sign{font-size:7.37pt; color:#7f7f7f;}
+  table.form td.g svg{display:block; margin:0 auto; width:6.8mm; height:2.7mm;}
+  .fp-notes{margin-top:4.08mm; width:191.5mm;}
+  .fp-notes .h{height:6.56mm; border:2px solid #000; display:flex; align-items:center; justify-content:center; font-size:10.72pt; box-sizing:border-box;}
+  .fp-notes .b{height:37.23mm; border:2px solid #000; border-top:none; box-sizing:border-box; padding:2mm 3mm; font-size:9pt; white-space:pre-wrap;}
+  .daily-page{color:#000; font-family:"Malgun Gothic","맑은 고딕","Noto Sans KR",sans-serif; break-after:page;}
+  .daily-page:last-child{break-after:auto;}
+  .daily-page h2{font-size:20px; margin:0 0 4px;}
+  .daily-page .dsub{font-size:12px; color:#444; margin:0 0 10px;}
+  table.daily{width:100%; border-collapse:collapse; font-size:12px;}
+  table.daily th{background:#eee; color:#000; border:1px solid #666; padding:5px 4px; border-radius:0;}
+  table.daily td{border:1px solid #666; padding:6px 4px; text-align:center;}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+
+  <div class="topbar">
+    <div class="topbar-row1">
+      <span class="brand"><span class="badge">여</span><span data-school>여수여자고등학교</span> <span class="sub">시간표</span></span>
+      <div class="spacer"></div>
+      <button class="theme-toggle" id="themeToggle">🌓 화면 모드</button>
+    </div>
+    <div class="topbar-row2">
+      <div class="tabs">
+        <button class="tab-btn" data-tab="home"><span class="ti">🏠</span>홈</button>
+        <button class="tab-btn" data-tab="teacher"><span class="ti">🧑‍🏫</span>교사</button>
+        <button class="tab-btn" data-tab="class"><span class="ti">🏫</span>학급</button>
+        <button class="tab-btn" data-tab="sub"><span class="ti">🔁</span>보강·교체</button>
+        <button class="tab-btn" data-tab="log"><span class="ti">📋</span>결보강 일지</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <section id="view-home">
+    <div class="hero">
+      <div class="semester" data-semester>2026학년도 2학기</div>
+      <h1><span data-school>여수여자고등학교</span> 시간표</h1>
+      <p>교사·학급 시간표를 한눈에 조회하고 그대로 인쇄하고, 결보강이 필요할 때 바꿀 수 있는 선생님을 찾아 배정한 뒤 일지 양식으로 바로 인쇄하세요.</p>
+      <div class="stat-row">
+        <div class="stat"><b id="statTeachers">-</b>선생님</div>
+        <div class="stat"><b id="statClasses">-</b>학급</div>
+        <div class="stat"><b id="statRecords">-</b>결보강 기록</div>
+      </div>
+    </div>
+    <div class="home-cards">
+      <div class="home-card">
+        <div class="ico">🧑‍🏫</div>
+        <h3>교사 시간표</h3>
+        <p>선생님 이름으로 검색해서 개인 시간표를 조회·인쇄합니다.</p>
+        <button data-goto="teacher">교사 시간표 보기</button>
+      </div>
+      <div class="home-card">
+        <div class="ico">🏫</div>
+        <h3>학급 시간표</h3>
+        <p>학년·반을 선택해서 학급 시간표를 조회·인쇄합니다.</p>
+        <button data-goto="class">학급 시간표 보기</button>
+      </div>
+      <div class="home-card">
+        <div class="ico">🔁</div>
+        <h3>보강·교체</h3>
+        <p>결근하는 선생님과 날짜를 고르고, 교시마다 보강·교체 선생님을 눌러 배정합니다.</p>
+        <button data-goto="sub">보강 배정하기</button>
+      </div>
+      <div class="home-card">
+        <div class="ico">📋</div>
+        <h3>결보강 일지</h3>
+        <p>배정 내역을 확인하고 「결보강 및 수업교체일지」 양식으로 바로 인쇄합니다.</p>
+        <button data-goto="log">일지 보기·인쇄</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEACHER / CLASS shared view -->
+  <section id="view-lookup" style="display:none;">
+    <div class="controls">
+      <div class="picker-group">
+        <span class="glabel" id="lookupLabel">🔍 이름 검색</span>
+        <div class="search-wrap">
+          <span class="search-ico">🔎</span>
+          <input type="text" id="searchBox" placeholder="이름 입력 후 Enter" autocomplete="off">
+          <div class="autocomplete" id="autocomplete"></div>
+        </div>
+      </div>
+      <div class="divider-v"></div>
+      <div class="picker-group secondary">
+        <span class="glabel">목록에서 선택</span>
+        <select id="pickerSelect" class="picker-select"></select>
+        <button class="nav-arrow" id="prevBtn" title="이전">‹</button>
+        <button class="nav-arrow" id="nextBtn" title="다음">›</button>
+      </div>
+      <div class="spacer"></div>
+      <span id="teacherOnlyBtns">
+        <button class="btn-ghost" id="cardPrintBtn">명함 인쇄</button>
+        <button class="btn-ghost" id="allPrintBtn">전체 인쇄</button>
+      </span>
+      <button class="btn-primary" id="printBtn">인쇄</button>
+    </div>
+    <p class="hint" id="lookupHint">이름을 검색해서 Enter를 누르거나, 오른쪽 목록에서 선택하면 시간표가 바로 나옵니다. 인쇄는 A4 한 장, 명함 인쇄는 같은 시간표를 카드 8장으로 뽑아 잘라 쓸 수 있어요.</p>
+
+    <div class="card" id="mainCard"></div>
+  </section>
+
+  <!-- 보강 · 교체 -->
+  <section id="view-sub" style="display:none;">
+    <div class="sub-controls">
+      <div class="sub-field">
+        <label>결근·출장 선생님</label>
+        <div class="picker-group">
+          <div class="search-wrap">
+            <span class="search-ico">🔎</span>
+            <input type="text" id="subSearchBox" placeholder="이름 입력 후 Enter" autocomplete="off" style="width:150px;">
+            <div class="autocomplete" id="subAutocomplete"></div>
+          </div>
+          <select id="subTeacherSelect" class="picker-select" style="min-width:110px;"></select>
+        </div>
+      </div>
+      <div class="sub-field">
+        <label>날짜 (여러 날이면 끝 날짜도)</label>
+        <div class="date-range">
+          <input type="date" id="subStart">
+          <span>~</span>
+          <input type="date" id="subEnd">
+        </div>
+      </div>
+      <div class="sub-field">
+        <label>사유</label>
+        <select id="subReason" class="sub-select">
+          <option>출장</option><option>연가</option><option>병가</option><option>공가</option>
+          <option>조퇴</option><option>외출</option><option>특별휴가</option><option>연수</option><option>기타</option>
+        </select>
+      </div>
+      <div class="sub-field">
+        <label>결근 범위</label>
+        <div class="day-pick" id="scopePick">
+          <button data-scope="all">종일</button>
+          <button data-scope="part">일부 교시</button>
+        </div>
+      </div>
+    </div>
+    <details class="meta-panel" id="metaPanel">
+      <summary>교과 분류·내선번호 확인·수정</summary>
+      <p class="meta-hint">보강 후보의 「동일 교과」 묶음은 여기 교과 분류를 기준으로 합니다. 담당 과목으로 자동 분류했으니 틀린 곳만 고쳐 주세요. 내선번호를 적어 두면 후보 목록에 같이 나옵니다.</p>
+      <div class="meta-grid" id="metaGrid"></div>
+      <div style="margin-top:10px;"><button class="btn-ghost" id="metaReset">자동 분류로 되돌리기</button></div>
+    </details>
+    <div class="date-bar" id="subDates"></div>
+    <div id="subResults"></div>
+  </section>
+
+  <!-- 결보강 일지 -->
+  <section id="view-log" style="display:none;">
+    <div class="sub-controls">
+      <div class="sub-field">
+        <label>결근 선생님</label>
+        <select id="logTeacher" class="picker-select" style="min-width:130px;"></select>
+      </div>
+      <div class="sub-field">
+        <label>기간 (비우면 전체)</label>
+        <div class="date-range">
+          <input type="date" id="logFrom">
+          <span>~</span>
+          <input type="date" id="logTo">
+          <button class="btn-ghost quick-range" data-range="today">오늘만</button>
+          <button class="btn-ghost quick-range" data-range="all">전체</button>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn-ghost" id="logPrintDaily">일자별 현황 인쇄</button>
+      <button class="btn-primary" id="logPrintForm">🖨️ 일지 양식 인쇄</button>
+    </div>
+    <p class="hint">「일지 양식 인쇄」는 학교 「결보강 및 수업교체일지」 양식 그대로, 결근 선생님마다 A4 한 장씩(17칸) 뽑습니다. 사유와 비고는 표에서 바로 고칠 수 있어요.</p>
+    <div class="reset-card">
+      <div class="rc-text">
+        <b>그날 일지 출력이 끝났다면 기록을 비우세요</b>
+        <span>결보강 기록을 모두 지우고 다음 결보강을 새로 입력합니다. 교과 분류와 내선번호는 지워지지 않습니다.</span>
+        <label class="rc-check"><input type="checkbox" id="resetBackup" checked> 지우기 전에 백업 파일로 저장해 두기</label>
+      </div>
+      <button class="btn-reset" id="resetRecords">🗑️ 결보강 기록 초기화<small id="resetCount"></small></button>
+    </div>
+    <div class="card" id="logTable"></div>
+    <div class="backup-row">
+      <button class="btn-ghost" id="backupSave">백업 파일 저장</button>
+      <button class="btn-ghost" id="backupLoadBtn">백업 불러오기</button>
+      <input type="file" id="backupLoad" accept=".json,application/json" style="display:none;">
+      <button class="btn-ghost" id="csvSave">엑셀용 CSV 저장</button>
+      <span class="note">결보강 기록은 지금 쓰는 컴퓨터의 브라우저에 저장됩니다. 다른 컴퓨터에서 이어 쓰려면 백업 파일을 저장해 옮긴 뒤 「백업 불러오기」를 눌러 주세요.</span>
+    </div>
+  </section>
+
+</div>
+
+<script id="raw-data" type="application/json">{"days":["월","화","수","목","금"],"dayPeriods":{"월":7,"화":7,"수":5,"목":6,"금":7},"teachers":[{"name":"유소연","hours":18,"schedule":{"월":[{"class":"1-7","subject":"자율"},{"class":"1-2","subject":"공국"},null,{"class":"1-4","subject":"공국"},null,{"class":"1-5","subject":"공국"},{"class":"1-8","subject":"공국"}],"화":[null,{"class":"1-3","subject":"공국"},null,null,null,{"class":"1-8","subject":"공국"},{"class":"1-2","subject":"공국"}],"수":[{"class":"1-7","subject":"공국"},null,null,{"class":"1-4","subject":"공국"},{"class":"1-7","subject":"동아"}],"목":[{"class":"1-3","subject":"공국"},null,{"class":"1-5","subject":"공국"},null,{"class":"1-1","subject":"공국"},{"class":"1-6","subject":"공국"}],"금":[null,{"class":"1-7","subject":"공국"},null,{"class":"1-1","subject":"공국"},{"class":"1-6","subject":"공국"},null,null]}},{"name":"박세정","hours":16,"schedule":{"월":[null,{"class":"1-1","subject":"공국"},null,{"class":"1-3","subject":"공국"},null,{"class":"1-7","subject":"공국"},null],"화":[{"class":"1-4","subject":"공국"},null,{"class":"1-2","subject":"공국"},{"class":"1-7","subject":"공국"},null,{"class":"1-5","subject":"공국"},null],"수":[{"class":"1-1","subject":"공국"},null,{"class":"1-8","subject":"공국"},{"class":"1-6","subject":"공국"},null],"목":[null,{"class":"1-6","subject":"공국"},null,null,{"class":"1-8","subject":"공국"},{"class":"1-5","subject":"공국"}],"금":[null,null,null,{"class":"1-3","subject":"공국"},{"class":"1-2","subject":"공국"},null,{"class":"1-4","subject":"공국"}]}},{"name":"오지혜","hours":17,"schedule":{"월":[{"class":"2-6","subject":"자율"},null,null,{"class":"2-1","subject":"독작"},null,{"class":"2-3","subject":"독글J"},{"class":"2-6","subject":"독작"}],"화":[null,null,{"class":"2-8","subject":"독작"},null,{"class":"2-3","subject":"독작"},null,{"class":"2-6","subject":"독작"}],"수":[null,null,{"class":"2-4","subject":"독작"},{"class":"2-1","subject":"독글J"},{"class":"2-6","subject":"동아"}],"목":[null,{"class":"2-2","subject":"독작"},null,{"class":"2-7","subject":"독작"},null,{"class":"2-5","subject":"독작"}],"금":[{"class":"2-2","subject":"독글J"},{"class":"2-8","subject":"독작"},null,null,{"class":"2-5","subject":"독작"},{"class":"2-7","subject":"독작"},null]}},{"name":"이수연","hours":15,"schedule":{"월":[null,null,null,{"class":"2-7","subject":"독작"},null,{"class":"2-2","subject":"독글J"},{"class":"2-5","subject":"독작"}],"화":[null,null,{"class":"2-1","subject":"독작"},null,null,{"class":"2-8","subject":"독작"},{"class":"2-4","subject":"독작"}],"수":[null,null,{"class":"2-3","subject":"독작"},{"class":"2-3","subject":"독글J"},null],"목":[{"class":"2-3","subject":"독작"},{"class":"2-4","subject":"독작"},null,{"class":"2-2","subject":"독작"},null,null],"금":[{"class":"2-1","subject":"독글J"},{"class":"2-1","subject":"독작"},null,null,{"class":"2-6","subject":"독작"},{"class":"2-2","subject":"독작"},null]}},{"name":"이화영","hours":16,"schedule":{"월":[{"class":"3-8","subject":"자율"},{"class":"3-1","subject":"화작"},null,{"class":"3-5","subject":"심국D"},null,{"class":"3-2","subject":"화작"},null],"화":[null,null,null,{"class":"3-3","subject":"심국C"},{"class":"3-8","subject":"화작"},null,null],"수":[{"class":"3-3","subject":"심국C"},null,{"class":"3-7","subject":"화작"},null,{"class":"3-8","subject":"동아"}],"목":[null,{"class":"3-3","subject":"심국C"},{"class":"3-4","subject":"화작"},null,null,{"class":"3-5","subject":"심국D"}],"금":[{"class":"3-3","subject":"화작"},null,null,{"class":"3-5","subject":"화작"},{"class":"3-5","subject":"심국D"},null,{"class":"3-6","subject":"화작"}]}},{"name":"김도예","hours":18,"schedule":{"월":[{"class":"3-4","subject":"자율"},{"class":"3-4","subject":"화작"},null,null,{"class":"3-3","subject":"화작"},{"class":"3-1","subject":"화작"},null],"화":[{"class":"3-8","subject":"화작"},{"class":"3-7","subject":"화작"},null,{"class":"3-2","subject":"화작"},{"class":"3-3","subject":"화작"},null,null],"수":[{"class":"3-6","subject":"화작"},null,{"class":"3-5","subject":"화작"},null,{"class":"3-4","subject":"동아"}],"목":[null,{"class":"3-6","subject":"화작"},{"class":"3-1","subject":"화작"},null,{"class":"3-2","subject":"화작"},null],"금":[{"class":"3-5","subject":"화작"},null,{"class":"3-4","subject":"화작"},{"class":"3-7","subject":"화작"},null,null,{"class":"3-8","subject":"화작"}]}},{"name":"정유진","hours":17,"schedule":{"월":[null,null,{"class":"2-4","subject":"독작"},{"class":"3-4","subject":"고읽D"},null,{"class":"2-1","subject":"독글J"},{"class":"3-2","subject":"고읽B"}],"화":[null,null,{"class":"3-2","subject":"고읽B"},null,{"class":"2-2","subject":"독작"},{"class":"2-7","subject":"독작"},null],"수":[null,null,{"class":"2-1","subject":"독작"},{"class":"2-2","subject":"독글J"},null],"목":[{"class":"2-6","subject":"독작"},{"class":"2-8","subject":"독작"},null,{"class":"3-2","subject":"고읽B"},null,{"class":"3-4","subject":"고읽D"}],"금":[{"class":"2-3","subject":"독글J"},null,{"class":"2-3","subject":"독작"},null,{"class":"3-4","subject":"고읽D"},{"class":"2-5","subject":"독작"},null]}},{"name":"유란희","hours":18,"schedule":{"월":[{"class":"1-6","subject":"자율"},{"class":"1-4","subject":"영어"},null,null,{"class":"1-7","subject":"영어"},null,{"class":"1-1","subject":"영어"}],"화":[{"class":"1-2","subject":"영어"},{"class":"1-5","subject":"영어"},null,{"class":"1-4","subject":"영어"},{"class":"1-3","subject":"영어"},null,null],"수":[{"class":"1-6","subject":"영어"},null,{"class":"1-2","subject":"영어"},null,{"class":"1-6","subject":"동아"}],"목":[null,null,{"class":"1-7","subject":"영어"},null,{"class":"1-3","subject":"영어"},{"class":"1-8","subject":"영어"}],"금":[null,{"class":"1-5","subject":"영어"},null,{"class":"1-8","subject":"영어"},null,{"class":"1-1","subject":"영어"},{"class":"1-6","subject":"영어"}]}},{"name":"남영우","hours":8,"schedule":{"월":[null,null,null,null,null,null,null],"화":[{"class":"1-1","subject":"영어"},null,{"class":"1-7","subject":"영어"},{"class":"1-8","subject":"영어"},null,null,null],"수":[null,null,{"class":"1-5","subject":"영어"},{"class":"1-3","subject":"영어"},null],"목":[{"class":"1-2","subject":"영어"},{"class":"1-4","subject":"영어"},null,{"class":"1-6","subject":"영어"},null,null],"금":[null,null,null,null,null,null,null]}},{"name":"김나영","hours":10,"schedule":{"월":[null,null,null,null,{"class":"1-5","subject":"영어"},{"class":"1-3","subject":"영어"},null],"화":[{"class":"1-6","subject":"영어"},{"class":"1-8","subject":"영어"},null,null,null,null,null],"수":[null,null,null,{"class":"2-6","subject":"세문영J"},null],"목":[{"class":"1-1","subject":"영어"},null,{"class":"1-2","subject":"영어"},null,null,null],"금":[{"class":"2-5","subject":"세문영J"},null,null,{"class":"1-7","subject":"영어"},{"class":"1-4","subject":"영어"},null,null]}},{"name":"정승대","hours":18,"schedule":{"월":[null,null,{"class":"2-2","subject":"영어Ⅰ"},{"class":"2-4","subject":"영어Ⅰ"},null,{"class":"2-6","subject":"세문영J"},{"class":"2-7","subject":"영어Ⅰ"}],"화":[null,null,{"class":"2-5","subject":"영어Ⅰ"},{"class":"2-8","subject":"영어Ⅰ"},null,{"class":"2-1","subject":"영어Ⅰ"},{"class":"2-3","subject":"영어Ⅰ"}],"수":[null,{"class":"2-6","subject":"영어Ⅰ"},null,{"class":"2-5","subject":"세문영J"},null],"목":[{"class":"2-5","subject":"영어Ⅰ"},{"class":"2-6","subject":"영어Ⅰ"},null,null,{"class":"2-2","subject":"영어Ⅰ"},{"class":"2-7","subject":"영어Ⅰ"}],"금":[{"class":"2-4","subject":"영어Ⅰ"},{"class":"2-3","subject":"영어Ⅰ"},null,null,{"class":"2-1","subject":"영어Ⅰ"},{"class":"2-8","subject":"영어Ⅰ"},null]}},{"name":"김미향","hours":18,"schedule":{"월":[null,null,{"class":"2-6","subject":"영어Ⅰ"},{"class":"2-3","subject":"영어Ⅰ"},null,{"class":"2-5","subject":"세문영J"},{"class":"2-4","subject":"영어Ⅰ"}],"화":[null,null,{"class":"2-6","subject":"영어Ⅰ"},{"class":"2-1","subject":"영어Ⅰ"},null,{"class":"2-3","subject":"영어Ⅰ"},{"class":"2-5","subject":"영어Ⅰ"}],"수":[null,{"class":"2-2","subject":"영어Ⅰ"},null,{"class":"2-4","subject":"영어Ⅰ"},null],"목":[{"class":"2-7","subject":"영어Ⅰ"},{"class":"2-5","subject":"영어Ⅰ"},null,{"class":"2-8","subject":"영어Ⅰ"},null,{"class":"2-2","subject":"영어Ⅰ"}],"금":[{"class":"2-6","subject":"세문영J"},null,{"class":"2-7","subject":"영어Ⅰ"},null,{"class":"2-8","subject":"영어Ⅰ"},{"class":"2-1","subject":"영어Ⅰ"},null]}},{"name":"조수비","hours":16,"schedule":{"월":[{"class":"3-7","subject":"자율"},{"class":"3-2","subject":"영독작"},null,{"class":"3-1","subject":"영권D"},{"class":"3-8","subject":"영독작"},null,{"class":"3-6","subject":"영권B"}],"화":[{"class":"3-5","subject":"영독작"},null,{"class":"3-6","subject":"영권B"},null,{"class":"3-7","subject":"영독작"},null,null],"수":[null,null,{"class":"3-6","subject":"영독작"},null,{"class":"3-7","subject":"동아"}],"목":[null,null,{"class":"3-3","subject":"영독작"},{"class":"3-6","subject":"영권B"},null,{"class":"3-1","subject":"영권D"}],"금":[{"class":"3-4","subject":"영독작"},null,null,null,{"class":"3-1","subject":"영권D"},null,{"class":"3-1","subject":"영독작"}]}},{"name":"이영광","hours":18,"schedule":{"월":[{"class":"3-1","subject":"자율"},{"class":"3-8","subject":"영독작"},null,null,{"class":"3-7","subject":"영독작"},{"class":"3-3","subject":"영독작"},null],"화":[{"class":"3-6","subject":"영독작"},{"class":"3-3","subject":"영독작"},null,null,{"class":"3-5","subject":"영독작"},null,{"class":"3-4","subject":"영독작"}],"수":[{"class":"3-2","subject":"영독작"},null,{"class":"3-4","subject":"영독작"},null,{"class":"3-1","subject":"동아"}],"목":[null,{"class":"3-2","subject":"영독작"},{"class":"3-6","subject":"영독작"},null,{"class":"3-1","subject":"영독작"},null],"금":[{"class":"3-8","subject":"영독작"},null,null,{"class":"3-1","subject":"영독작"},null,{"class":"3-5","subject":"영독작"},{"class":"3-7","subject":"영독작"}]}},{"name":"김진이","hours":18,"schedule":{"월":[{"class":"1-3","subject":"자율"},{"class":"1-3","subject":"수학"},null,{"class":"1-2","subject":"수학"},null,{"class":"1-4","subject":"수학"},{"class":"1-7","subject":"수학"}],"화":[null,{"class":"1-6","subject":"수학"},null,{"class":"1-1","subject":"수학"},null,null,null],"수":[{"class":"1-5","subject":"수학"},null,{"class":"1-4","subject":"수학"},{"class":"1-8","subject":"수학"},{"class":"1-3","subject":"동아"}],"목":[{"class":"1-8","subject":"수학"},null,{"class":"1-3","subject":"수학"},null,{"class":"1-6","subject":"수학"},{"class":"1-1","subject":"수학"}],"금":[{"class":"1-5","subject":"수학"},{"class":"1-2","subject":"수학"},null,null,null,null,{"class":"1-7","subject":"수학"}]}},{"name":"허수정","hours":18,"schedule":{"월":[{"class":"1-5","subject":"자율"},null,{"class":"1-2","subject":"수학"},null,{"class":"1-1","subject":"수학"},{"class":"1-8","subject":"수학"},null],"화":[null,{"class":"1-2","subject":"수학"},null,{"class":"1-5","subject":"수학"},null,{"class":"1-7","subject":"수학"},{"class":"1-8","subject":"수학"}],"수":[null,{"class":"1-6","subject":"수학"},{"class":"1-1","subject":"수학"},null,{"class":"1-5","subject":"동아"}],"목":[{"class":"1-6","subject":"수학"},null,null,{"class":"1-3","subject":"수학"},null,{"class":"1-4","subject":"수학"}],"금":[{"class":"1-7","subject":"수학"},{"class":"1-3","subject":"수학"},null,{"class":"1-4","subject":"수학"},{"class":"1-5","subject":"수학"},null,null]}},{"name":"이상민","hours":18,"schedule":{"월":[{"class":"2-4","subject":"자율"},null,{"class":"2-1","subject":"미적Ⅰ"},{"class":"2-2","subject":"미적Ⅰ"},null,{"class":"2-4","subject":"미적Ⅰ"},{"class":"2-3","subject":"미적Ⅰ"}],"화":[null,null,{"class":"2-3","subject":"미적Ⅰ"},{"class":"2-2","subject":"미적Ⅰ"},null,{"class":"2-4","subject":"미적Ⅰ"},{"class":"2-1","subject":"미적Ⅰ"}],"수":[null,{"class":"2-1","subject":"미적Ⅰ"},{"class":"2-2","subject":"미적Ⅰ"},null,{"class":"2-4","subject":"동아"}],"목":[null,{"class":"2-3","subject":"미적Ⅰ"},null,{"class":"2-4","subject":"미적Ⅰ"},null,{"class":"2-1","subject":"미적Ⅰ"}],"금":[null,null,{"class":"2-4","subject":"미적Ⅰ"},null,{"class":"2-2","subject":"미적Ⅰ"},{"class":"2-3","subject":"미적Ⅰ"},null]}},{"name":"문화일","hours":12,"schedule":{"월":[null,null,{"class":"2-7","subject":"미적Ⅰ"},{"class":"2-6","subject":"미적Ⅰ"},null,null,{"class":"2-8","subject":"미적Ⅰ"}],"화":[null,null,null,{"class":"2-6","subject":"미적Ⅰ"},null,null,{"class":"2-7","subject":"미적Ⅰ"}],"수":[null,{"class":"2-8","subject":"미적Ⅰ"},{"class":"2-7","subject":"미적Ⅰ"},null,null],"목":[null,null,null,{"class":"2-6","subject":"미적Ⅰ"},null,{"class":"2-8","subject":"미적Ⅰ"}],"금":[null,null,{"class":"2-8","subject":"미적Ⅰ"},null,{"class":"2-7","subject":"미적Ⅰ"},{"class":"2-6","subject":"미적Ⅰ"},null]}},{"name":"이지리","hours":15,"schedule":{"월":[{"class":"3-3","subject":"자율"},null,{"class":"2-5","subject":"미적Ⅰ"},{"class":"3-8","subject":"미분D"},null,null,null],"화":[null,null,null,{"class":"3-1","subject":"미분C"},null,{"class":"2-5","subject":"미적Ⅰ"},{"class":"3-2","subject":"미분E"}],"수":[{"class":"3-1","subject":"미분C"},null,null,{"class":"3-2","subject":"미분E"},{"class":"3-3","subject":"동아"}],"목":[null,{"class":"3-1","subject":"미분C"},null,{"class":"2-5","subject":"미적Ⅰ"},null,{"class":"3-8","subject":"미분D"}],"금":[null,{"class":"2-5","subject":"미적Ⅰ"},{"class":"3-2","subject":"미분E"},null,{"class":"3-8","subject":"미분D"},null,null]}},{"name":"박미정","hours":12,"schedule":{"월":[null,null,{"class":"3-3","subject":"기하F"},{"class":"3-7","subject":"기하D"},null,{"class":"2-8","subject":"기하J"},null],"화":[null,null,null,{"class":"2-4","subject":"기하(독)"},null,null,null],"수":[null,{"class":"2-4","subject":"기하(독)"},null,{"class":"2-8","subject":"기하J"},null],"목":[{"class":"3-3","subject":"기하F"},null,null,null,null,{"class":"3-7","subject":"기하D"}],"금":[{"class":"2-8","subject":"기하J"},{"class":"2-4","subject":"기하(독)"},null,null,{"class":"3-7","subject":"기하D"},{"class":"3-3","subject":"기하F"},null]}},{"name":"김미정","hours":14,"schedule":{"월":[{"class":"3-5","subject":"자율"},null,{"class":"3-6","subject":"경수F"},null,null,null,null],"화":[null,null,null,{"class":"3-8","subject":"경수C"},null,{"class":"3-1","subject":"경수A"},{"class":"3-5","subject":"경수E"}],"수":[{"class":"3-8","subject":"경수C"},{"class":"3-1","subject":"경수A"},null,{"class":"3-5","subject":"경수E"},{"class":"3-5","subject":"동아"}],"목":[{"class":"3-6","subject":"경수F"},{"class":"3-8","subject":"경수C"},null,null,null,null],"금":[null,{"class":"3-1","subject":"경수A"},{"class":"3-5","subject":"경수E"},null,null,{"class":"3-6","subject":"경수F"},null]}},{"name":"정미솔","hours":18,"schedule":{"월":[{"class":"1-1","subject":"자율"},null,null,{"class":"1-8","subject":"한국사2"},null,null,{"class":"1-3","subject":"한국사2"}],"화":[null,{"class":"1-4","subject":"한국사2"},{"class":"1-6","subject":"한국사2"},null,{"class":"1-2","subject":"한국사2"},null,{"class":"1-5","subject":"한국사2"}],"수":[{"class":"1-2","subject":"한국사2"},{"class":"1-7","subject":"한국사2"},null,null,{"class":"1-1","subject":"동아"}],"목":[{"class":"1-5","subject":"한국사2"},{"class":"1-1","subject":"한국사2"},null,{"class":"1-8","subject":"한국사2"},{"class":"1-7","subject":"한국사2"},null],"금":[null,{"class":"1-4","subject":"한국사2"},{"class":"1-3","subject":"한국사2"},null,null,{"class":"1-6","subject":"한국사2"},{"class":"1-1","subject":"한국사2"}]}},{"name":"나종현","hours":16,"schedule":{"월":[{"class":"3-2","subject":"자율"},null,{"class":"3-2","subject":"세계F"},null,{"class":"1-4","subject":"한국사1"},{"class":"1-2","subject":"한국사1"},null],"화":[null,{"class":"1-1","subject":"한국사1"},null,null,null,{"class":"3-5","subject":"세계A"},{"class":"1-7","subject":"한국사1"}],"수":[null,{"class":"3-5","subject":"세계A"},{"class":"1-3","subject":"한국사1"},null,{"class":"3-2","subject":"동아"}],"목":[{"class":"3-2","subject":"세계F"},null,{"class":"1-6","subject":"한국사1"},null,null,null],"금":[{"class":"1-8","subject":"한국사1"},{"class":"3-5","subject":"세계A"},null,null,null,{"class":"3-2","subject":"세계F"},{"class":"1-5","subject":"한국사1"}]}},{"name":"김종현","hours":16,"schedule":{"월":[{"class":"2-2","subject":"자율"},null,null,{"class":"3-6","subject":"여행D"},null,{"class":"3-4","subject":"여행(독)"},null],"화":[{"class":"3-4","subject":"여행(독)"},{"class":"2-2","subject":"세지K"},null,{"class":"3-7","subject":"한지C"},null,{"class":"3-3","subject":"여행A"},null],"수":[{"class":"3-7","subject":"한지C"},{"class":"3-3","subject":"여행A"},null,null,{"class":"2-2","subject":"동아"}],"목":[null,{"class":"3-7","subject":"한지C"},{"class":"2-2","subject":"세지K"},null,null,{"class":"3-6","subject":"여행D"}],"금":[null,{"class":"3-3","subject":"여행A"},null,{"class":"3-4","subject":"여행(독)"},{"class":"3-6","subject":"여행D"},null,null]}},{"name":"이영진","hours":16,"schedule":{"월":[null,{"class":"2-2","subject":"세지K"},{"class":"1-3","subject":"통사"},null,null,null,{"class":"3-1","subject":"여행B"}],"화":[null,null,{"class":"3-1","subject":"여행B"},{"class":"3-5","subject":"여행C"},null,{"class":"1-4","subject":"통사"},null],"수":[{"class":"3-5","subject":"여행C"},{"class":"1-2","subject":"통사"},null,{"class":"1-7","subject":"통사"},null],"목":[null,{"class":"3-5","subject":"여행C"},null,{"class":"3-1","subject":"여행B"},{"class":"1-5","subject":"통사"},null],"금":[null,{"class":"1-6","subject":"통사"},{"class":"1-8","subject":"통사"},null,{"class":"1-1","subject":"통사"},null,{"class":"2-2","subject":"세지K"}]}},{"name":"이다겸","hours":17,"schedule":{"월":[null,{"class":"2-7","subject":"사문K"},null,null,{"class":"2-6","subject":"사문L"},{"class":"1-6","subject":"통사"},null],"화":[{"class":"2-5","subject":"사문L"},null,{"class":"1-5","subject":"통사"},null,null,{"class":"1-2","subject":"통사"},{"class":"3-6","subject":"고윤E"}],"수":[{"class":"2-6","subject":"사문L"},{"class":"1-1","subject":"통사"},null,{"class":"3-6","subject":"고윤E"},null],"목":[null,null,{"class":"1-8","subject":"통사"},{"class":"1-7","subject":"통사"},null,{"class":"1-3","subject":"통사"}],"금":[null,null,{"class":"3-6","subject":"고윤E"},{"class":"2-5","subject":"사문L"},null,{"class":"1-4","subject":"통사"},{"class":"2-7","subject":"사문K"}]}},{"name":"엄경옥","hours":16,"schedule":{"월":[{"class":"1-2","subject":"자율"},null,{"class":"1-4","subject":"통사"},null,{"class":"2-5","subject":"사문L"},null,{"class":"1-2","subject":"통사"}],"화":[{"class":"2-6","subject":"사문L"},{"class":"2-7","subject":"사문K"},null,null,{"class":"1-6","subject":"통사"},{"class":"1-3","subject":"통사"},null],"수":[{"class":"2-5","subject":"사문L"},{"class":"1-8","subject":"통사"},null,null,{"class":"1-2","subject":"동아"}],"목":[null,null,{"class":"2-7","subject":"사문K"},{"class":"1-5","subject":"통사"},null,null],"금":[{"class":"1-1","subject":"통사"},null,{"class":"1-7","subject":"통사"},{"class":"2-6","subject":"사문L"},null,null,null]}},{"name":"이미소","hours":16,"schedule":{"월":[null,{"class":"3-5","subject":"고윤(독)"},{"class":"3-4","subject":"정법F"},null,{"class":"2-8","subject":"정치L"},null,{"class":"3-5","subject":"정법B"}],"화":[{"class":"2-8","subject":"정치L"},null,{"class":"3-5","subject":"정법B"},null,null,{"class":"3-7","subject":"정법A"},null],"수":[{"class":"2-8","subject":"정치L"},{"class":"3-7","subject":"정법A"},null,null,null],"목":[{"class":"3-4","subject":"정법F"},null,null,{"class":"3-5","subject":"정법B"},{"class":"3-5","subject":"고윤(독)"},null],"금":[null,{"class":"3-7","subject":"정법A"},null,{"class":"2-8","subject":"정치L"},null,{"class":"3-4","subject":"정법F"},{"class":"3-5","subject":"고윤(독)"}]}},{"name":"감은채","hours":17,"schedule":{"월":[{"class":"2-7","subject":"자율"},{"class":"2-8","subject":"인윤K"},null,{"class":"3-2","subject":"윤사D"},null,null,null],"화":[{"class":"2-7","subject":"인윤L"},{"class":"2-5","subject":"인윤K"},null,null,null,{"class":"3-6","subject":"윤사A"},{"class":"3-8","subject":"윤사E"}],"수":[{"class":"2-7","subject":"인윤L"},{"class":"3-6","subject":"윤사A"},null,{"class":"3-8","subject":"윤사E"},{"class":"2-7","subject":"동아"}],"목":[null,null,{"class":"2-8","subject":"인윤K"},null,null,{"class":"3-2","subject":"윤사D"}],"금":[null,{"class":"3-6","subject":"윤사A"},{"class":"3-8","subject":"윤사E"},null,{"class":"3-2","subject":"윤사D"},null,{"class":"2-5","subject":"인윤K"}]}},{"name":"김지형","hours":15,"schedule":{"월":[null,{"class":"2-5","subject":"인윤K"},null,{"class":"3-3","subject":"고윤D"},{"class":"2-7","subject":"인윤L"},null,null],"화":[null,{"class":"2-8","subject":"인윤K"},null,{"class":"3-4","subject":"고윤C"},null,{"class":"3-2","subject":"고윤A"},null],"수":[{"class":"3-4","subject":"고윤C"},{"class":"3-2","subject":"고윤A"},null,null,null],"목":[null,{"class":"3-4","subject":"고윤C"},{"class":"2-5","subject":"인윤K"},null,null,{"class":"3-3","subject":"고윤D"}],"금":[null,{"class":"3-2","subject":"고윤A"},null,{"class":"2-7","subject":"인윤L"},{"class":"3-3","subject":"고윤D"},null,{"class":"2-8","subject":"인윤K"}]}},{"name":"박명철","hours":16,"schedule":{"월":[{"class":"2-3","subject":"자율"},{"class":"2-1","subject":"물ⅠK"},{"class":"3-7","subject":"과사F"},null,{"class":"2-2","subject":"물ⅠL"},null,null],"화":[{"class":"2-2","subject":"물ⅠL"},{"class":"2-1","subject":"물ⅠK"},null,null,null,{"class":"3-4","subject":"물ⅡA"},null],"수":[{"class":"2-2","subject":"물ⅠL"},{"class":"3-4","subject":"물ⅡA"},null,null,{"class":"2-3","subject":"동아"}],"목":[{"class":"3-7","subject":"과사F"},null,{"class":"2-1","subject":"물ⅠK"},null,null,null],"금":[null,{"class":"3-4","subject":"물ⅡA"},null,{"class":"2-2","subject":"물ⅠL"},null,{"class":"3-7","subject":"과사F"},{"class":"2-1","subject":"물ⅠK"}]}},{"name":"이선주","hours":17,"schedule":{"월":[{"class":"3-6","subject":"자율"},{"class":"2-6","subject":"생ⅠK"},null,null,{"class":"2-4","subject":"생ⅠL"},null,{"class":"3-7","subject":"생ⅡB"}],"화":[{"class":"2-4","subject":"생ⅠL"},null,{"class":"3-7","subject":"생ⅡB"},null,{"class":"3-6","subject":"생Ⅱ(독)"},null,{"class":"3-1","subject":"생ⅡE"}],"수":[{"class":"2-3","subject":"생ⅠL"},null,null,{"class":"3-1","subject":"생ⅡE"},{"class":"3-6","subject":"동아"}],"목":[null,null,null,{"class":"3-7","subject":"생ⅡB"},{"class":"3-6","subject":"생Ⅱ(독)"},null],"금":[{"class":"3-6","subject":"생Ⅱ(독)"},null,{"class":"3-1","subject":"생ⅡE"},{"class":"2-3","subject":"생ⅠL"},null,null,{"class":"2-6","subject":"생ⅠK"}]}},{"name":"이은영","hours":16,"schedule":{"월":[{"class":"2-5","subject":"자율"},{"class":"1-8","subject":"통과2"},null,{"class":"1-6","subject":"통과2"},{"class":"2-3","subject":"생ⅠL"},null,null],"화":[{"class":"2-3","subject":"생ⅠL"},{"class":"2-6","subject":"생ⅠK"},null,null,{"class":"1-5","subject":"통과2"},null,null],"수":[{"class":"2-4","subject":"생ⅠL"},null,{"class":"1-7","subject":"통과2"},null,{"class":"2-5","subject":"동아"}],"목":[null,null,{"class":"2-6","subject":"생ⅠK"},null,{"class":"1-4","subject":"통과2"},null],"금":[{"class":"1-3","subject":"통과2"},null,{"class":"1-1","subject":"통과2"},{"class":"2-4","subject":"생ⅠL"},null,{"class":"1-2","subject":"통과2"},null]}},{"name":"박혜정","hours":15,"schedule":{"월":[null,{"class":"1-7","subject":"과탐실2"},{"class":"1-1","subject":"과탐실2"},null,{"class":"1-3","subject":"과탐실2"},null,null],"화":[null,null,{"class":"1-8","subject":"과탐실2"},null,null,{"class":"1-6","subject":"과탐실2"},{"class":"3-7","subject":"화ⅡE"}],"수":[null,null,{"class":"3-2","subject":"과사(독)"},{"class":"3-7","subject":"화ⅡE"},null],"목":[null,{"class":"1-5","subject":"과탐실2"},{"class":"1-4","subject":"과탐실2"},null,null,{"class":"1-2","subject":"과탐실2"}],"금":[null,{"class":"3-8","subject":"과사A"},{"class":"3-7","subject":"화ⅡE"},{"class":"3-2","subject":"과사(독)"},null,null,{"class":"3-2","subject":"과사(독)"}]}},{"name":"김주연","hours":15,"schedule":{"월":[null,{"class":"2-4","subject":"화ⅠK"},{"class":"3-1","subject":"화ⅡF"},null,null,null,{"class":"3-4","subject":"과사B"}],"화":[null,{"class":"2-4","subject":"화ⅠK"},{"class":"3-4","subject":"과사B"},null,null,{"class":"3-8","subject":"과사A"},{"class":"3-3","subject":"과사E"}],"수":[null,{"class":"3-8","subject":"과사A"},null,{"class":"3-3","subject":"과사E"},null],"목":[{"class":"3-1","subject":"화ⅡF"},null,{"class":"2-4","subject":"화ⅠK"},{"class":"3-4","subject":"과사B"},null,null],"금":[null,null,{"class":"3-3","subject":"과사E"},null,null,{"class":"3-1","subject":"화ⅡF"},{"class":"2-4","subject":"화ⅠK"}]}},{"name":"서수연","hours":15,"schedule":{"월":[{"class":"1-4","subject":"자율"},null,{"class":"1-5","subject":"통과2"},null,{"class":"1-6","subject":"통과2"},null,{"class":"3-3","subject":"지ⅡB"}],"화":[{"class":"1-3","subject":"통과2"},null,{"class":"3-3","subject":"지ⅡB"},null,{"class":"1-7","subject":"통과2"},null,null],"수":[null,{"class":"1-4","subject":"통과2"},null,{"class":"1-1","subject":"통과2"},{"class":"1-4","subject":"동아"}],"목":[null,null,{"class":"2-3","subject":"지ⅠK"},{"class":"3-3","subject":"지ⅡB"},null,null],"금":[null,null,{"class":"1-2","subject":"통과2"},null,{"class":"1-8","subject":"통과2"},null,{"class":"2-3","subject":"지ⅠK"}]}},{"name":"김민석","hours":14,"schedule":{"월":[null,{"class":"2-3","subject":"지ⅠK"},null,null,{"class":"2-1","subject":"기후L"},null,null],"화":[{"class":"2-1","subject":"기후L"},{"class":"2-3","subject":"지ⅠK"},null,{"class":"1-6","subject":"통과2"},{"class":"1-1","subject":"통과2"},null,null],"수":[{"class":"2-1","subject":"기후L"},{"class":"1-3","subject":"통과2"},null,{"class":"1-2","subject":"통과2"},null],"목":[{"class":"1-7","subject":"통과2"},null,null,{"class":"1-4","subject":"통과2"},null,null],"금":[null,null,{"class":"1-5","subject":"통과2"},{"class":"2-1","subject":"기후L"},null,{"class":"1-8","subject":"통과2"},null]}},{"name":"엄성일","hours":16,"schedule":{"월":[null,{"class":"3-3","subject":"음비3"},null,{"class":"1-7","subject":"음비1"},null,{"class":"3-8","subject":"음비3"},{"class":"1-5","subject":"음비1"}],"화":[{"class":"3-2","subject":"음비3"},null,{"class":"1-1","subject":"음비1"},null,{"class":"3-1","subject":"음비3"},null,null],"수":[{"class":"1-4","subject":"음비1"},null,{"class":"1-6","subject":"음비1"},null,null],"목":[null,{"class":"1-2","subject":"음비1"},{"class":"3-5","subject":"음비3"},null,{"class":"3-4","subject":"음비3"},null],"금":[{"class":"3-7","subject":"음비3"},{"class":"1-8","subject":"음비1"},null,{"class":"3-6","subject":"음비3"},null,null,{"class":"1-3","subject":"음비1"}]}},{"name":"김기현","hours":8,"schedule":{"월":[null,null,{"class":"1-6","subject":"음비1"},{"class":"1-1","subject":"음비1"},null,null,null],"화":[null,null,null,{"class":"1-2","subject":"음비1"},{"class":"1-8","subject":"음비1"},null,{"class":"1-3","subject":"음비1"}],"수":[null,null,null,null,null],"목":[null,null,null,null,null,null],"금":[null,null,{"class":"1-4","subject":"음비1"},null,{"class":"1-7","subject":"음비1"},{"class":"1-5","subject":"음비1"},null]}},{"name":"김지연","hours":18,"schedule":{"월":[{"class":"2-8","subject":"자율"},null,{"class":"2-8","subject":"미비"},{"class":"2-8","subject":"미비"},null,null,null],"화":[null,null,{"class":"2-7","subject":"미비"},{"class":"2-7","subject":"미비"},null,{"class":"2-2","subject":"미비"},{"class":"2-2","subject":"미비"}],"수":[null,{"class":"2-5","subject":"미비"},{"class":"2-5","subject":"미비"},null,{"class":"2-8","subject":"동아"}],"목":[{"class":"2-1","subject":"미비"},{"class":"2-1","subject":"미비"},null,null,{"class":"2-3","subject":"미비"},{"class":"2-3","subject":"미비"}],"금":[null,{"class":"2-6","subject":"미비"},{"class":"2-6","subject":"미비"},null,{"class":"2-4","subject":"미비"},{"class":"2-4","subject":"미비"},null]}},{"name":"명우성","hours":18,"schedule":{"월":[{"class":"1-8","subject":"자율"},{"class":"1-6","subject":"체육"},null,null,{"class":"1-8","subject":"체육"},null,{"class":"1-4","subject":"체육"}],"화":[null,{"class":"1-7","subject":"체육"},{"class":"1-3","subject":"체육"},null,{"class":"1-4","subject":"체육"},{"class":"1-1","subject":"체육"},null],"수":[{"class":"1-8","subject":"체육"},null,null,{"class":"1-5","subject":"체육"},{"class":"1-8","subject":"동아"}],"목":[null,null,{"class":"1-1","subject":"체육"},{"class":"1-2","subject":"체육"},null,{"class":"1-7","subject":"체육"}],"금":[{"class":"1-2","subject":"체육"},null,{"class":"1-6","subject":"체육"},{"class":"1-5","subject":"체육"},null,{"class":"1-3","subject":"체육"},null]}},{"name":"정수원","hours":16,"schedule":{"월":[null,null,{"class":"2-3","subject":"스포츠"},{"class":"2-5","subject":"스포츠"},null,null,{"class":"2-2","subject":"스포츠"}],"화":[null,null,{"class":"2-4","subject":"스포츠"},{"class":"2-5","subject":"스포츠"},null,{"class":"2-6","subject":"스포츠"},{"class":"2-8","subject":"스포츠"}],"수":[null,{"class":"2-7","subject":"스포츠"},{"class":"2-6","subject":"스포츠"},null,null],"목":[{"class":"2-8","subject":"스포츠"},{"class":"2-7","subject":"스포츠"},null,{"class":"2-1","subject":"스포츠"},null,{"class":"2-4","subject":"스포츠"}],"금":[null,{"class":"2-2","subject":"스포츠"},{"class":"2-1","subject":"스포츠"},null,{"class":"2-3","subject":"스포츠"},null,null]}},{"name":"하정한","hours":16,"schedule":{"월":[null,{"class":"3-7","subject":"운동"},{"class":"3-5","subject":"운동"},null,{"class":"3-1","subject":"운동"},{"class":"3-6","subject":"운동"},null],"화":[{"class":"3-7","subject":"운동"},{"class":"3-8","subject":"운동"},null,{"class":"3-6","subject":"운동"},{"class":"3-2","subject":"운동"},null,null],"수":[null,null,{"class":"3-8","subject":"운동"},{"class":"3-4","subject":"운동"},null],"목":[{"class":"3-5","subject":"운동"},null,{"class":"3-2","subject":"운동"},null,{"class":"3-3","subject":"운동"},null],"금":[{"class":"3-1","subject":"운동"},null,null,{"class":"3-3","subject":"운동"},null,null,{"class":"3-4","subject":"운동"}]}},{"name":"문세희","hours":6,"schedule":{"월":[null,null,null,null,{"class":"3-5","subject":"보3G"},null,null],"화":[{"class":"3-1","subject":"보3(독)"},{"class":"3-5","subject":"보3G"},null,null,{"class":"2-5","subject":"보2M"},null,null],"수":[null,null,{"class":"3-1","subject":"보3(독)"},null,null],"목":[null,null,null,null,{"class":"2-5","subject":"보2M"},null],"금":[null,null,null,null,null,null,null]}},{"name":"박은경","hours":2,"schedule":{"월":[null,null,null,null,{"class":"3-6","subject":"논술G"},null,null],"화":[null,{"class":"3-6","subject":"논술G"},null,null,null,null,null],"수":[null,null,null,null,null],"목":[null,null,null,null,null,null],"금":[null,null,null,null,null,null,null]}},{"name":"박기쁨","hours":6,"schedule":{"월":[null,null,null,null,null,null,null],"화":[null,null,{"class":"2-2","subject":"심리(독)"},{"class":"2-3","subject":"심리(독)"},{"class":"2-4","subject":"심리M1"},null,null],"수":[null,null,null,null,null],"목":[{"class":"2-2","subject":"심리(독)"},null,null,{"class":"2-3","subject":"심리(독)"},{"class":"2-4","subject":"심리M1"},null],"금":[null,null,null,null,null,null,null]}},{"name":"이유숙","hours":2,"schedule":{"월":[null,null,null,null,null,null,null],"화":[null,null,null,null,{"class":"2-8","subject":"심리M2"},null,null],"수":[null,null,null,null,null],"목":[null,null,null,null,{"class":"2-8","subject":"심리M2"},null],"금":[null,null,null,null,null,null,null]}},{"name":"권률원","hours":16,"schedule":{"월":[null,{"class":"3-6","subject":"진로3"},{"class":"1-8","subject":"아동"},null,null,{"class":"3-5","subject":"진로3"},{"class":"1-6","subject":"아동"}],"화":[{"class":"1-8","subject":"아동"},{"class":"3-1","subject":"진로3"},null,null,{"class":"3-4","subject":"진로3"},null,{"class":"1-6","subject":"아동"}],"수":[null,{"class":"2-3","subject":"진로2"},{"class":"3-3","subject":"진로3"},null,null],"목":[null,{"class":"1-8","subject":"아동"},{"class":"3-8","subject":"진로3"},null,{"class":"3-7","subject":"진로3"},null],"금":[{"class":"3-2","subject":"진로3"},null,{"class":"2-2","subject":"진로2"},{"class":"1-6","subject":"아동"},null,null,null]}},{"name":"노수진","hours":15,"schedule":{"월":[{"class":"2-1","subject":"자율"},null,{"class":"1-7","subject":"중회화"},null,{"class":"3-4","subject":"교육G"},null,{"class":"2-1","subject":"진로2"}],"화":[{"class":"1-7","subject":"중회화"},{"class":"3-4","subject":"교육G"},null,null,{"class":"2-6","subject":"이해M"},null,null],"수":[null,null,{"class":"2-8","subject":"진로2"},null,{"class":"2-1","subject":"동아"}],"목":[{"class":"2-4","subject":"진로2"},{"class":"1-7","subject":"중회화"},null,null,{"class":"2-6","subject":"이해M"},{"class":"2-6","subject":"진로2"}],"금":[null,{"class":"2-7","subject":"진로2"},{"class":"2-5","subject":"진로2"},null,null,null,null]}},{"name":"노미정","hours":15,"schedule":{"월":[null,{"class":"1-5","subject":"일회화"},null,null,{"class":"1-2","subject":"일회화"},{"class":"1-1","subject":"일회화"},null],"화":[{"class":"1-5","subject":"일회화"},null,{"class":"1-4","subject":"일회화"},{"class":"1-3","subject":"일회화"},null,null,{"class":"1-1","subject":"일회화"}],"수":[{"class":"1-3","subject":"일회화"},{"class":"1-5","subject":"일회화"},null,null,null],"목":[{"class":"1-4","subject":"일회화"},null,null,null,{"class":"1-2","subject":"일회화"},null],"금":[{"class":"1-4","subject":"일회화"},{"class":"1-1","subject":"일회화"},null,null,{"class":"1-3","subject":"일회화"},null,{"class":"1-2","subject":"일회화"}]}},{"name":"박소윤","hours":10,"schedule":{"월":[null,null,null,{"class":"1-5","subject":"진로"},null,null,null],"화":[null,null,null,null,{"class":"2-1","subject":"직업M"},null,{"class":"1-4","subject":"진로"}],"수":[null,null,null,null,null],"목":[null,{"class":"1-3","subject":"진로"},null,{"class":"1-1","subject":"진로"},{"class":"2-1","subject":"직업M"},null],"금":[{"class":"1-6","subject":"진로"},null,null,{"class":"1-2","subject":"진로"},null,{"class":"1-7","subject":"진로"},{"class":"1-8","subject":"진로"}]}},{"name":"신지은","hours":8,"schedule":{"월":[null,null,null,null,{"class":"3-2","subject":"환경G"},{"class":"3-7","subject":"환경(독)"},null],"화":[{"class":"3-3","subject":"환경(독)"},{"class":"3-2","subject":"환경G"},null,null,null,null,null],"수":[null,null,null,null,null],"목":[null,null,{"class":"3-7","subject":"환경(독)"},null,{"class":"3-8","subject":"환경(독)"},null],"금":[null,null,null,{"class":"3-8","subject":"환경(독)"},null,null,{"class":"3-3","subject":"환경(독)"}]}}],"classList":["1-1","1-2","1-3","1-4","1-5","1-6","1-7","1-8","2-1","2-2","2-3","2-4","2-5","2-6","2-7","2-8","3-1","3-2","3-3","3-4","3-5","3-6","3-7","3-8"],"classes":{"1-1":{"월":[{"subject":"자율","teacher":"정미솔"},{"subject":"공국","teacher":"박세정"},{"subject":"과탐실2","teacher":"박혜정"},{"subject":"음비1","teacher":"김기현"},{"subject":"수학","teacher":"허수정"},{"subject":"일회화","teacher":"노미정"},{"subject":"영어","teacher":"유란희"}],"화":[{"subject":"영어","teacher":"남영우"},{"subject":"한국사1","teacher":"나종현"},{"subject":"음비1","teacher":"엄성일"},{"subject":"수학","teacher":"김진이"},{"subject":"통과2","teacher":"김민석"},{"subject":"체육","teacher":"명우성"},{"subject":"일회화","teacher":"노미정"}],"수":[{"subject":"공국","teacher":"박세정"},{"subject":"통사","teacher":"이다겸"},{"subject":"수학","teacher":"허수정"},{"subject":"통과2","teacher":"서수연"},{"subject":"동아","teacher":"정미솔"}],"목":[{"subject":"영어","teacher":"김나영"},{"subject":"한국사2","teacher":"정미솔"},{"subject":"체육","teacher":"명우성"},{"subject":"진로","teacher":"박소윤"},{"subject":"공국","teacher":"유소연"},{"subject":"수학","teacher":"김진이"}],"금":[{"subject":"통사","teacher":"엄경옥"},{"subject":"일회화","teacher":"노미정"},{"subject":"통과2","teacher":"이은영"},{"subject":"공국","teacher":"유소연"},{"subject":"통사","teacher":"이영진"},{"subject":"영어","teacher":"유란희"},{"subject":"한국사2","teacher":"정미솔"}]},"1-2":{"월":[{"subject":"자율","teacher":"엄경옥"},{"subject":"공국","teacher":"유소연"},{"subject":"수학","teacher":"허수정"},{"subject":"수학","teacher":"김진이"},{"subject":"일회화","teacher":"노미정"},{"subject":"한국사1","teacher":"나종현"},{"subject":"통사","teacher":"엄경옥"}],"화":[{"subject":"영어","teacher":"유란희"},{"subject":"수학","teacher":"허수정"},{"subject":"공국","teacher":"박세정"},{"subject":"음비1","teacher":"김기현"},{"subject":"한국사2","teacher":"정미솔"},{"subject":"통사","teacher":"이다겸"},{"subject":"공국","teacher":"유소연"}],"수":[{"subject":"한국사2","teacher":"정미솔"},{"subject":"통사","teacher":"이영진"},{"subject":"영어","teacher":"유란희"},{"subject":"통과2","teacher":"김민석"},{"subject":"동아","teacher":"엄경옥"}],"목":[{"subject":"영어","teacher":"남영우"},{"subject":"음비1","teacher":"엄성일"},{"subject":"영어","teacher":"김나영"},{"subject":"체육","teacher":"명우성"},{"subject":"일회화","teacher":"노미정"},{"subject":"과탐실2","teacher":"박혜정"}],"금":[{"subject":"체육","teacher":"명우성"},{"subject":"수학","teacher":"김진이"},{"subject":"통과2","teacher":"서수연"},{"subject":"진로","teacher":"박소윤"},{"subject":"공국","teacher":"박세정"},{"subject":"통과2","teacher":"이은영"},{"subject":"일회화","teacher":"노미정"}]},"1-3":{"월":[{"subject":"자율","teacher":"김진이"},{"subject":"수학","teacher":"김진이"},{"subject":"통사","teacher":"이영진"},{"subject":"공국","teacher":"박세정"},{"subject":"과탐실2","teacher":"박혜정"},{"subject":"영어","teacher":"김나영"},{"subject":"한국사2","teacher":"정미솔"}],"화":[{"subject":"통과2","teacher":"서수연"},{"subject":"공국","teacher":"유소연"},{"subject":"체육","teacher":"명우성"},{"subject":"일회화","teacher":"노미정"},{"subject":"영어","teacher":"유란희"},{"subject":"통사","teacher":"엄경옥"},{"subject":"음비1","teacher":"김기현"}],"수":[{"subject":"일회화","teacher":"노미정"},{"subject":"통과2","teacher":"김민석"},{"subject":"한국사1","teacher":"나종현"},{"subject":"영어","teacher":"남영우"},{"subject":"동아","teacher":"김진이"}],"목":[{"subject":"공국","teacher":"유소연"},{"subject":"진로","teacher":"박소윤"},{"subject":"수학","teacher":"김진이"},{"subject":"수학","teacher":"허수정"},{"subject":"영어","teacher":"유란희"},{"subject":"통사","teacher":"이다겸"}],"금":[{"subject":"통과2","teacher":"이은영"},{"subject":"수학","teacher":"허수정"},{"subject":"한국사2","teacher":"정미솔"},{"subject":"공국","teacher":"박세정"},{"subject":"일회화","teacher":"노미정"},{"subject":"체육","teacher":"명우성"},{"subject":"음비1","teacher":"엄성일"}]},"1-4":{"월":[{"subject":"자율","teacher":"서수연"},{"subject":"영어","teacher":"유란희"},{"subject":"통사","teacher":"엄경옥"},{"subject":"공국","teacher":"유소연"},{"subject":"한국사1","teacher":"나종현"},{"subject":"수학","teacher":"김진이"},{"subject":"체육","teacher":"명우성"}],"화":[{"subject":"공국","teacher":"박세정"},{"subject":"한국사2","teacher":"정미솔"},{"subject":"일회화","teacher":"노미정"},{"subject":"영어","teacher":"유란희"},{"subject":"체육","teacher":"명우성"},{"subject":"통사","teacher":"이영진"},{"subject":"진로","teacher":"박소윤"}],"수":[{"subject":"음비1","teacher":"엄성일"},{"subject":"통과2","teacher":"서수연"},{"subject":"수학","teacher":"김진이"},{"subject":"공국","teacher":"유소연"},{"subject":"동아","teacher":"서수연"}],"목":[{"subject":"일회화","teacher":"노미정"},{"subject":"영어","teacher":"남영우"},{"subject":"과탐실2","teacher":"박혜정"},{"subject":"통과2","teacher":"김민석"},{"subject":"통과2","teacher":"이은영"},{"subject":"수학","teacher":"허수정"}],"금":[{"subject":"일회화","teacher":"노미정"},{"subject":"한국사2","teacher":"정미솔"},{"subject":"음비1","teacher":"김기현"},{"subject":"수학","teacher":"허수정"},{"subject":"영어","teacher":"김나영"},{"subject":"통사","teacher":"이다겸"},{"subject":"공국","teacher":"박세정"}]},"1-5":{"월":[{"subject":"자율","teacher":"허수정"},{"subject":"일회화","teacher":"노미정"},{"subject":"통과2","teacher":"서수연"},{"subject":"진로","teacher":"박소윤"},{"subject":"영어","teacher":"김나영"},{"subject":"공국","teacher":"유소연"},{"subject":"음비1","teacher":"엄성일"}],"화":[{"subject":"일회화","teacher":"노미정"},{"subject":"영어","teacher":"유란희"},{"subject":"통사","teacher":"이다겸"},{"subject":"수학","teacher":"허수정"},{"subject":"통과2","teacher":"이은영"},{"subject":"공국","teacher":"박세정"},{"subject":"한국사2","teacher":"정미솔"}],"수":[{"subject":"수학","teacher":"김진이"},{"subject":"일회화","teacher":"노미정"},{"subject":"영어","teacher":"남영우"},{"subject":"체육","teacher":"명우성"},{"subject":"동아","teacher":"허수정"}],"목":[{"subject":"한국사2","teacher":"정미솔"},{"subject":"과탐실2","teacher":"박혜정"},{"subject":"공국","teacher":"유소연"},{"subject":"통사","teacher":"엄경옥"},{"subject":"통사","teacher":"이영진"},{"subject":"공국","teacher":"박세정"}],"금":[{"subject":"수학","teacher":"김진이"},{"subject":"영어","teacher":"유란희"},{"subject":"통과2","teacher":"김민석"},{"subject":"체육","teacher":"명우성"},{"subject":"수학","teacher":"허수정"},{"subject":"음비1","teacher":"김기현"},{"subject":"한국사1","teacher":"나종현"}]},"1-6":{"월":[{"subject":"자율","teacher":"유란희"},{"subject":"체육","teacher":"명우성"},{"subject":"음비1","teacher":"김기현"},{"subject":"통과2","teacher":"이은영"},{"subject":"통과2","teacher":"서수연"},{"subject":"통사","teacher":"이다겸"},{"subject":"아동","teacher":"권률원"}],"화":[{"subject":"영어","teacher":"김나영"},{"subject":"수학","teacher":"김진이"},{"subject":"한국사2","teacher":"정미솔"},{"subject":"통과2","teacher":"김민석"},{"subject":"통사","teacher":"엄경옥"},{"subject":"과탐실2","teacher":"박혜정"},{"subject":"아동","teacher":"권률원"}],"수":[{"subject":"영어","teacher":"유란희"},{"subject":"수학","teacher":"허수정"},{"subject":"음비1","teacher":"엄성일"},{"subject":"공국","teacher":"박세정"},{"subject":"동아","teacher":"유란희"}],"목":[{"subject":"수학","teacher":"허수정"},{"subject":"공국","teacher":"박세정"},{"subject":"한국사1","teacher":"나종현"},{"subject":"영어","teacher":"남영우"},{"subject":"수학","teacher":"김진이"},{"subject":"공국","teacher":"유소연"}],"금":[{"subject":"진로","teacher":"박소윤"},{"subject":"통사","teacher":"이영진"},{"subject":"체육","teacher":"명우성"},{"subject":"아동","teacher":"권률원"},{"subject":"공국","teacher":"유소연"},{"subject":"한국사2","teacher":"정미솔"},{"subject":"영어","teacher":"유란희"}]},"1-7":{"월":[{"subject":"자율","teacher":"유소연"},{"subject":"과탐실2","teacher":"박혜정"},{"subject":"중회화","teacher":"노수진"},{"subject":"음비1","teacher":"엄성일"},{"subject":"영어","teacher":"유란희"},{"subject":"공국","teacher":"박세정"},{"subject":"수학","teacher":"김진이"}],"화":[{"subject":"중회화","teacher":"노수진"},{"subject":"체육","teacher":"명우성"},{"subject":"영어","teacher":"남영우"},{"subject":"공국","teacher":"박세정"},{"subject":"통과2","teacher":"서수연"},{"subject":"수학","teacher":"허수정"},{"subject":"한국사1","teacher":"나종현"}],"수":[{"subject":"공국","teacher":"유소연"},{"subject":"한국사2","teacher":"정미솔"},{"subject":"통과2","teacher":"이은영"},{"subject":"통사","teacher":"이영진"},{"subject":"동아","teacher":"유소연"}],"목":[{"subject":"통과2","teacher":"김민석"},{"subject":"중회화","teacher":"노수진"},{"subject":"영어","teacher":"유란희"},{"subject":"통사","teacher":"이다겸"},{"subject":"한국사2","teacher":"정미솔"},{"subject":"체육","teacher":"명우성"}],"금":[{"subject":"수학","teacher":"허수정"},{"subject":"공국","teacher":"유소연"},{"subject":"통사","teacher":"엄경옥"},{"subject":"영어","teacher":"김나영"},{"subject":"음비1","teacher":"김기현"},{"subject":"진로","teacher":"박소윤"},{"subject":"수학","teacher":"김진이"}]},"1-8":{"월":[{"subject":"자율","teacher":"명우성"},{"subject":"통과2","teacher":"이은영"},{"subject":"아동","teacher":"권률원"},{"subject":"한국사2","teacher":"정미솔"},{"subject":"체육","teacher":"명우성"},{"subject":"수학","teacher":"허수정"},{"subject":"공국","teacher":"유소연"}],"화":[{"subject":"아동","teacher":"권률원"},{"subject":"영어","teacher":"김나영"},{"subject":"과탐실2","teacher":"박혜정"},{"subject":"영어","teacher":"남영우"},{"subject":"음비1","teacher":"김기현"},{"subject":"공국","teacher":"유소연"},{"subject":"수학","teacher":"허수정"}],"수":[{"subject":"체육","teacher":"명우성"},{"subject":"통사","teacher":"엄경옥"},{"subject":"공국","teacher":"박세정"},{"subject":"수학","teacher":"김진이"},{"subject":"동아","teacher":"명우성"}],"목":[{"subject":"수학","teacher":"김진이"},{"subject":"아동","teacher":"권률원"},{"subject":"통사","teacher":"이다겸"},{"subject":"한국사2","teacher":"정미솔"},{"subject":"공국","teacher":"박세정"},{"subject":"영어","teacher":"유란희"}],"금":[{"subject":"한국사1","teacher":"나종현"},{"subject":"음비1","teacher":"엄성일"},{"subject":"통사","teacher":"이영진"},{"subject":"영어","teacher":"유란희"},{"subject":"통과2","teacher":"서수연"},{"subject":"통과2","teacher":"김민석"},{"subject":"진로","teacher":"박소윤"}]},"2-1":{"월":[{"subject":"자율","teacher":"노수진"},{"subject":"물ⅠK","teacher":"박명철"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"독작","teacher":"오지혜"},{"subject":"기후L","teacher":"김민석"},{"subject":"독글J","teacher":"정유진"},{"subject":"진로2","teacher":"노수진"}],"화":[{"subject":"기후L","teacher":"김민석"},{"subject":"물ⅠK","teacher":"박명철"},{"subject":"독작","teacher":"이수연"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"직업M","teacher":"박소윤"},{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"미적Ⅰ","teacher":"이상민"}],"수":[{"subject":"기후L","teacher":"김민석"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"독작","teacher":"정유진"},{"subject":"독글J","teacher":"오지혜"},{"subject":"동아","teacher":"노수진"}],"목":[{"subject":"미비","teacher":"김지연"},{"subject":"미비","teacher":"김지연"},{"subject":"물ⅠK","teacher":"박명철"},{"subject":"스포츠","teacher":"정수원"},{"subject":"직업M","teacher":"박소윤"},{"subject":"미적Ⅰ","teacher":"이상민"}],"금":[{"subject":"독글J","teacher":"이수연"},{"subject":"독작","teacher":"이수연"},{"subject":"스포츠","teacher":"정수원"},{"subject":"기후L","teacher":"김민석"},{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"물ⅠK","teacher":"박명철"}]},"2-2":{"월":[{"subject":"자율","teacher":"김종현"},{"subject":"세지K","teacher":"이영진"},{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"물ⅠL","teacher":"박명철"},{"subject":"독글J","teacher":"이수연"},{"subject":"스포츠","teacher":"정수원"}],"화":[{"subject":"물ⅠL","teacher":"박명철"},{"subject":"세지K","teacher":"김종현"},{"subject":"심리(독)","teacher":"박기쁨"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"독작","teacher":"정유진"},{"subject":"미비","teacher":"김지연"},{"subject":"미비","teacher":"김지연"}],"수":[{"subject":"물ⅠL","teacher":"박명철"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"독글J","teacher":"정유진"},{"subject":"동아","teacher":"김종현"}],"목":[{"subject":"심리(독)","teacher":"박기쁨"},{"subject":"독작","teacher":"오지혜"},{"subject":"세지K","teacher":"김종현"},{"subject":"독작","teacher":"이수연"},{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"영어Ⅰ","teacher":"김미향"}],"금":[{"subject":"독글J","teacher":"오지혜"},{"subject":"스포츠","teacher":"정수원"},{"subject":"진로2","teacher":"권률원"},{"subject":"물ⅠL","teacher":"박명철"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"독작","teacher":"이수연"},{"subject":"세지K","teacher":"이영진"}]},"2-3":{"월":[{"subject":"자율","teacher":"박명철"},{"subject":"지ⅠK","teacher":"김민석"},{"subject":"스포츠","teacher":"정수원"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"생ⅠL","teacher":"이은영"},{"subject":"독글J","teacher":"오지혜"},{"subject":"미적Ⅰ","teacher":"이상민"}],"화":[{"subject":"생ⅠL","teacher":"이은영"},{"subject":"지ⅠK","teacher":"김민석"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"심리(독)","teacher":"박기쁨"},{"subject":"독작","teacher":"오지혜"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"영어Ⅰ","teacher":"정승대"}],"수":[{"subject":"생ⅠL","teacher":"이선주"},{"subject":"진로2","teacher":"권률원"},{"subject":"독작","teacher":"이수연"},{"subject":"독글J","teacher":"이수연"},{"subject":"동아","teacher":"박명철"}],"목":[{"subject":"독작","teacher":"이수연"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"지ⅠK","teacher":"서수연"},{"subject":"심리(독)","teacher":"박기쁨"},{"subject":"미비","teacher":"김지연"},{"subject":"미비","teacher":"김지연"}],"금":[{"subject":"독글J","teacher":"정유진"},{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"독작","teacher":"정유진"},{"subject":"생ⅠL","teacher":"이선주"},{"subject":"스포츠","teacher":"정수원"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"지ⅠK","teacher":"서수연"}]},"2-4":{"월":[{"subject":"자율","teacher":"이상민"},{"subject":"화ⅠK","teacher":"김주연"},{"subject":"독작","teacher":"정유진"},{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"생ⅠL","teacher":"이선주"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"영어Ⅰ","teacher":"김미향"}],"화":[{"subject":"생ⅠL","teacher":"이선주"},{"subject":"화ⅠK","teacher":"김주연"},{"subject":"스포츠","teacher":"정수원"},{"subject":"기하(독)","teacher":"박미정"},{"subject":"심리M1","teacher":"박기쁨"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"독작","teacher":"이수연"}],"수":[{"subject":"생ⅠL","teacher":"이은영"},{"subject":"기하(독)","teacher":"박미정"},{"subject":"독작","teacher":"오지혜"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"동아","teacher":"이상민"}],"목":[{"subject":"진로2","teacher":"노수진"},{"subject":"독작","teacher":"이수연"},{"subject":"화ⅠK","teacher":"김주연"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"심리M1","teacher":"박기쁨"},{"subject":"스포츠","teacher":"정수원"}],"금":[{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"기하(독)","teacher":"박미정"},{"subject":"미적Ⅰ","teacher":"이상민"},{"subject":"생ⅠL","teacher":"이은영"},{"subject":"미비","teacher":"김지연"},{"subject":"미비","teacher":"김지연"},{"subject":"화ⅠK","teacher":"김주연"}]},"2-5":{"월":[{"subject":"자율","teacher":"이은영"},{"subject":"인윤K","teacher":"김지형"},{"subject":"미적Ⅰ","teacher":"이지리"},{"subject":"스포츠","teacher":"정수원"},{"subject":"사문L","teacher":"엄경옥"},{"subject":"세문영J","teacher":"김미향"},{"subject":"독작","teacher":"이수연"}],"화":[{"subject":"사문L","teacher":"이다겸"},{"subject":"인윤K","teacher":"감은채"},{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"스포츠","teacher":"정수원"},{"subject":"보2M","teacher":"문세희"},{"subject":"미적Ⅰ","teacher":"이지리"},{"subject":"영어Ⅰ","teacher":"김미향"}],"수":[{"subject":"사문L","teacher":"엄경옥"},{"subject":"미비","teacher":"김지연"},{"subject":"미비","teacher":"김지연"},{"subject":"세문영J","teacher":"정승대"},{"subject":"동아","teacher":"이은영"}],"목":[{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"인윤K","teacher":"김지형"},{"subject":"미적Ⅰ","teacher":"이지리"},{"subject":"보2M","teacher":"문세희"},{"subject":"독작","teacher":"오지혜"}],"금":[{"subject":"세문영J","teacher":"김나영"},{"subject":"미적Ⅰ","teacher":"이지리"},{"subject":"진로2","teacher":"노수진"},{"subject":"사문L","teacher":"이다겸"},{"subject":"독작","teacher":"오지혜"},{"subject":"독작","teacher":"정유진"},{"subject":"인윤K","teacher":"감은채"}]},"2-6":{"월":[{"subject":"자율","teacher":"오지혜"},{"subject":"생ⅠK","teacher":"이선주"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"미적Ⅰ","teacher":"문화일"},{"subject":"사문L","teacher":"이다겸"},{"subject":"세문영J","teacher":"정승대"},{"subject":"독작","teacher":"오지혜"}],"화":[{"subject":"사문L","teacher":"엄경옥"},{"subject":"생ⅠK","teacher":"이은영"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"미적Ⅰ","teacher":"문화일"},{"subject":"이해M","teacher":"노수진"},{"subject":"스포츠","teacher":"정수원"},{"subject":"독작","teacher":"오지혜"}],"수":[{"subject":"사문L","teacher":"이다겸"},{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"스포츠","teacher":"정수원"},{"subject":"세문영J","teacher":"김나영"},{"subject":"동아","teacher":"오지혜"}],"목":[{"subject":"독작","teacher":"정유진"},{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"생ⅠK","teacher":"이은영"},{"subject":"미적Ⅰ","teacher":"문화일"},{"subject":"이해M","teacher":"노수진"},{"subject":"진로2","teacher":"노수진"}],"금":[{"subject":"세문영J","teacher":"김미향"},{"subject":"미비","teacher":"김지연"},{"subject":"미비","teacher":"김지연"},{"subject":"사문L","teacher":"엄경옥"},{"subject":"독작","teacher":"이수연"},{"subject":"미적Ⅰ","teacher":"문화일"},{"subject":"생ⅠK","teacher":"이선주"}]},"2-7":{"월":[{"subject":"자율","teacher":"감은채"},{"subject":"사문K","teacher":"이다겸"},{"subject":"미적Ⅰ","teacher":"문화일"},{"subject":"독작","teacher":"이수연"},{"subject":"인윤L","teacher":"김지형"},{"subject":"기초J","teacher":""},{"subject":"영어Ⅰ","teacher":"정승대"}],"화":[{"subject":"인윤L","teacher":"감은채"},{"subject":"사문K","teacher":"엄경옥"},{"subject":"미비","teacher":"김지연"},{"subject":"미비","teacher":"김지연"},{"subject":"교양M","teacher":""},{"subject":"독작","teacher":"정유진"},{"subject":"미적Ⅰ","teacher":"문화일"}],"수":[{"subject":"인윤L","teacher":"감은채"},{"subject":"스포츠","teacher":"정수원"},{"subject":"미적Ⅰ","teacher":"문화일"},{"subject":"기초J","teacher":""},{"subject":"동아","teacher":"감은채"}],"목":[{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"스포츠","teacher":"정수원"},{"subject":"사문K","teacher":"엄경옥"},{"subject":"독작","teacher":"오지혜"},{"subject":"교양M","teacher":""},{"subject":"영어Ⅰ","teacher":"정승대"}],"금":[{"subject":"기초J","teacher":""},{"subject":"진로2","teacher":"노수진"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"인윤L","teacher":"김지형"},{"subject":"미적Ⅰ","teacher":"문화일"},{"subject":"독작","teacher":"오지혜"},{"subject":"사문K","teacher":"이다겸"}]},"2-8":{"월":[{"subject":"자율","teacher":"김지연"},{"subject":"인윤K","teacher":"감은채"},{"subject":"미비","teacher":"김지연"},{"subject":"미비","teacher":"김지연"},{"subject":"정치L","teacher":"이미소"},{"subject":"기하J","teacher":"박미정"},{"subject":"미적Ⅰ","teacher":"문화일"}],"화":[{"subject":"정치L","teacher":"이미소"},{"subject":"인윤K","teacher":"김지형"},{"subject":"독작","teacher":"오지혜"},{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"심리M2","teacher":"이유숙"},{"subject":"독작","teacher":"이수연"},{"subject":"스포츠","teacher":"정수원"}],"수":[{"subject":"정치L","teacher":"이미소"},{"subject":"미적Ⅰ","teacher":"문화일"},{"subject":"진로2","teacher":"노수진"},{"subject":"기하J","teacher":"박미정"},{"subject":"동아","teacher":"김지연"}],"목":[{"subject":"스포츠","teacher":"정수원"},{"subject":"독작","teacher":"정유진"},{"subject":"인윤K","teacher":"감은채"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"심리M2","teacher":"이유숙"},{"subject":"미적Ⅰ","teacher":"문화일"}],"금":[{"subject":"기하J","teacher":"박미정"},{"subject":"독작","teacher":"오지혜"},{"subject":"미적Ⅰ","teacher":"문화일"},{"subject":"정치L","teacher":"이미소"},{"subject":"영어Ⅰ","teacher":"김미향"},{"subject":"영어Ⅰ","teacher":"정승대"},{"subject":"인윤K","teacher":"김지형"}]},"3-1":{"월":[{"subject":"자율","teacher":"이영광"},{"subject":"화작","teacher":"이화영"},{"subject":"화ⅡF","teacher":"김주연"},{"subject":"영권D","teacher":"조수비"},{"subject":"운동","teacher":"하정한"},{"subject":"화작","teacher":"김도예"},{"subject":"여행B","teacher":"이영진"}],"화":[{"subject":"보3(독)","teacher":"문세희"},{"subject":"진로3","teacher":"권률원"},{"subject":"여행B","teacher":"이영진"},{"subject":"미분C","teacher":"이지리"},{"subject":"음비3","teacher":"엄성일"},{"subject":"경수A","teacher":"김미정"},{"subject":"생ⅡE","teacher":"이선주"}],"수":[{"subject":"미분C","teacher":"이지리"},{"subject":"경수A","teacher":"김미정"},{"subject":"보3(독)","teacher":"문세희"},{"subject":"생ⅡE","teacher":"이선주"},{"subject":"동아","teacher":"이영광"}],"목":[{"subject":"화ⅡF","teacher":"김주연"},{"subject":"미분C","teacher":"이지리"},{"subject":"화작","teacher":"김도예"},{"subject":"여행B","teacher":"이영진"},{"subject":"영독작","teacher":"이영광"},{"subject":"영권D","teacher":"조수비"}],"금":[{"subject":"운동","teacher":"하정한"},{"subject":"경수A","teacher":"김미정"},{"subject":"생ⅡE","teacher":"이선주"},{"subject":"영독작","teacher":"이영광"},{"subject":"영권D","teacher":"조수비"},{"subject":"화ⅡF","teacher":"김주연"},{"subject":"영독작","teacher":"조수비"}]},"3-2":{"월":[{"subject":"자율","teacher":"나종현"},{"subject":"영독작","teacher":"조수비"},{"subject":"세계F","teacher":"나종현"},{"subject":"윤사D","teacher":"감은채"},{"subject":"환경G","teacher":"신지은"},{"subject":"화작","teacher":"이화영"},{"subject":"고읽B","teacher":"정유진"}],"화":[{"subject":"음비3","teacher":"엄성일"},{"subject":"환경G","teacher":"신지은"},{"subject":"고읽B","teacher":"정유진"},{"subject":"화작","teacher":"김도예"},{"subject":"운동","teacher":"하정한"},{"subject":"고윤A","teacher":"김지형"},{"subject":"미분E","teacher":"이지리"}],"수":[{"subject":"영독작","teacher":"이영광"},{"subject":"고윤A","teacher":"김지형"},{"subject":"과사(독)","teacher":"박혜정"},{"subject":"미분E","teacher":"이지리"},{"subject":"동아","teacher":"나종현"}],"목":[{"subject":"세계F","teacher":"나종현"},{"subject":"영독작","teacher":"이영광"},{"subject":"운동","teacher":"하정한"},{"subject":"고읽B","teacher":"정유진"},{"subject":"화작","teacher":"김도예"},{"subject":"윤사D","teacher":"감은채"}],"금":[{"subject":"진로3","teacher":"권률원"},{"subject":"고윤A","teacher":"김지형"},{"subject":"미분E","teacher":"이지리"},{"subject":"과사(독)","teacher":"박혜정"},{"subject":"윤사D","teacher":"감은채"},{"subject":"세계F","teacher":"나종현"},{"subject":"과사(독)","teacher":"박혜정"}]},"3-3":{"월":[{"subject":"자율","teacher":"이지리"},{"subject":"음비3","teacher":"엄성일"},{"subject":"기하F","teacher":"박미정"},{"subject":"고윤D","teacher":"김지형"},{"subject":"화작","teacher":"김도예"},{"subject":"영독작","teacher":"이영광"},{"subject":"지ⅡB","teacher":"서수연"}],"화":[{"subject":"환경(독)","teacher":"신지은"},{"subject":"영독작","teacher":"이영광"},{"subject":"지ⅡB","teacher":"서수연"},{"subject":"심국C","teacher":"이화영"},{"subject":"화작","teacher":"김도예"},{"subject":"여행A","teacher":"김종현"},{"subject":"과사E","teacher":"김주연"}],"수":[{"subject":"심국C","teacher":"이화영"},{"subject":"여행A","teacher":"김종현"},{"subject":"진로3","teacher":"권률원"},{"subject":"과사E","teacher":"김주연"},{"subject":"동아","teacher":"이지리"}],"목":[{"subject":"기하F","teacher":"박미정"},{"subject":"심국C","teacher":"이화영"},{"subject":"영독작","teacher":"조수비"},{"subject":"지ⅡB","teacher":"서수연"},{"subject":"운동","teacher":"하정한"},{"subject":"고윤D","teacher":"김지형"}],"금":[{"subject":"화작","teacher":"이화영"},{"subject":"여행A","teacher":"김종현"},{"subject":"과사E","teacher":"김주연"},{"subject":"운동","teacher":"하정한"},{"subject":"고윤D","teacher":"김지형"},{"subject":"기하F","teacher":"박미정"},{"subject":"환경(독)","teacher":"신지은"}]},"3-4":{"월":[{"subject":"자율","teacher":"김도예"},{"subject":"화작","teacher":"김도예"},{"subject":"정법F","teacher":"이미소"},{"subject":"고읽D","teacher":"정유진"},{"subject":"교육G","teacher":"노수진"},{"subject":"여행(독)","teacher":"김종현"},{"subject":"과사B","teacher":"김주연"}],"화":[{"subject":"여행(독)","teacher":"김종현"},{"subject":"교육G","teacher":"노수진"},{"subject":"과사B","teacher":"김주연"},{"subject":"고윤C","teacher":"김지형"},{"subject":"진로3","teacher":"권률원"},{"subject":"물ⅡA","teacher":"박명철"},{"subject":"영독작","teacher":"이영광"}],"수":[{"subject":"고윤C","teacher":"김지형"},{"subject":"물ⅡA","teacher":"박명철"},{"subject":"영독작","teacher":"이영광"},{"subject":"운동","teacher":"하정한"},{"subject":"동아","teacher":"김도예"}],"목":[{"subject":"정법F","teacher":"이미소"},{"subject":"고윤C","teacher":"김지형"},{"subject":"화작","teacher":"이화영"},{"subject":"과사B","teacher":"김주연"},{"subject":"음비3","teacher":"엄성일"},{"subject":"고읽D","teacher":"정유진"}],"금":[{"subject":"영독작","teacher":"조수비"},{"subject":"물ⅡA","teacher":"박명철"},{"subject":"화작","teacher":"김도예"},{"subject":"여행(독)","teacher":"김종현"},{"subject":"고읽D","teacher":"정유진"},{"subject":"정법F","teacher":"이미소"},{"subject":"운동","teacher":"하정한"}]},"3-5":{"월":[{"subject":"자율","teacher":"김미정"},{"subject":"고윤(독)","teacher":"이미소"},{"subject":"운동","teacher":"하정한"},{"subject":"심국D","teacher":"이화영"},{"subject":"보3G","teacher":"문세희"},{"subject":"진로3","teacher":"권률원"},{"subject":"정법B","teacher":"이미소"}],"화":[{"subject":"영독작","teacher":"조수비"},{"subject":"보3G","teacher":"문세희"},{"subject":"정법B","teacher":"이미소"},{"subject":"여행C","teacher":"이영진"},{"subject":"영독작","teacher":"이영광"},{"subject":"세계A","teacher":"나종현"},{"subject":"경수E","teacher":"김미정"}],"수":[{"subject":"여행C","teacher":"이영진"},{"subject":"세계A","teacher":"나종현"},{"subject":"화작","teacher":"김도예"},{"subject":"경수E","teacher":"김미정"},{"subject":"동아","teacher":"김미정"}],"목":[{"subject":"운동","teacher":"하정한"},{"subject":"여행C","teacher":"이영진"},{"subject":"음비3","teacher":"엄성일"},{"subject":"정법B","teacher":"이미소"},{"subject":"고윤(독)","teacher":"이미소"},{"subject":"심국D","teacher":"이화영"}],"금":[{"subject":"화작","teacher":"김도예"},{"subject":"세계A","teacher":"나종현"},{"subject":"경수E","teacher":"김미정"},{"subject":"화작","teacher":"이화영"},{"subject":"심국D","teacher":"이화영"},{"subject":"영독작","teacher":"이영광"},{"subject":"고윤(독)","teacher":"이미소"}]},"3-6":{"월":[{"subject":"자율","teacher":"이선주"},{"subject":"진로3","teacher":"권률원"},{"subject":"경수F","teacher":"김미정"},{"subject":"여행D","teacher":"김종현"},{"subject":"논술G","teacher":"박은경"},{"subject":"운동","teacher":"하정한"},{"subject":"영권B","teacher":"조수비"}],"화":[{"subject":"영독작","teacher":"이영광"},{"subject":"논술G","teacher":"박은경"},{"subject":"영권B","teacher":"조수비"},{"subject":"운동","teacher":"하정한"},{"subject":"생Ⅱ(독)","teacher":"이선주"},{"subject":"윤사A","teacher":"감은채"},{"subject":"고윤E","teacher":"이다겸"}],"수":[{"subject":"화작","teacher":"김도예"},{"subject":"윤사A","teacher":"감은채"},{"subject":"영독작","teacher":"조수비"},{"subject":"고윤E","teacher":"이다겸"},{"subject":"동아","teacher":"이선주"}],"목":[{"subject":"경수F","teacher":"김미정"},{"subject":"화작","teacher":"김도예"},{"subject":"영독작","teacher":"이영광"},{"subject":"영권B","teacher":"조수비"},{"subject":"생Ⅱ(독)","teacher":"이선주"},{"subject":"여행D","teacher":"김종현"}],"금":[{"subject":"생Ⅱ(독)","teacher":"이선주"},{"subject":"윤사A","teacher":"감은채"},{"subject":"고윤E","teacher":"이다겸"},{"subject":"음비3","teacher":"엄성일"},{"subject":"여행D","teacher":"김종현"},{"subject":"경수F","teacher":"김미정"},{"subject":"화작","teacher":"이화영"}]},"3-7":{"월":[{"subject":"자율","teacher":"조수비"},{"subject":"운동","teacher":"하정한"},{"subject":"과사F","teacher":"박명철"},{"subject":"기하D","teacher":"박미정"},{"subject":"영독작","teacher":"이영광"},{"subject":"환경(독)","teacher":"신지은"},{"subject":"생ⅡB","teacher":"이선주"}],"화":[{"subject":"운동","teacher":"하정한"},{"subject":"화작","teacher":"김도예"},{"subject":"생ⅡB","teacher":"이선주"},{"subject":"한지C","teacher":"김종현"},{"subject":"영독작","teacher":"조수비"},{"subject":"정법A","teacher":"이미소"},{"subject":"화ⅡE","teacher":"박혜정"}],"수":[{"subject":"한지C","teacher":"김종현"},{"subject":"정법A","teacher":"이미소"},{"subject":"화작","teacher":"이화영"},{"subject":"화ⅡE","teacher":"박혜정"},{"subject":"동아","teacher":"조수비"}],"목":[{"subject":"과사F","teacher":"박명철"},{"subject":"한지C","teacher":"김종현"},{"subject":"환경(독)","teacher":"신지은"},{"subject":"생ⅡB","teacher":"이선주"},{"subject":"진로3","teacher":"권률원"},{"subject":"기하D","teacher":"박미정"}],"금":[{"subject":"음비3","teacher":"엄성일"},{"subject":"정법A","teacher":"이미소"},{"subject":"화ⅡE","teacher":"박혜정"},{"subject":"화작","teacher":"김도예"},{"subject":"기하D","teacher":"박미정"},{"subject":"과사F","teacher":"박명철"},{"subject":"영독작","teacher":"이영광"}]},"3-8":{"월":[{"subject":"자율","teacher":"이화영"},{"subject":"영독작","teacher":"이영광"},{"subject":"세트F","teacher":""},{"subject":"미분D","teacher":"이지리"},{"subject":"영독작","teacher":"조수비"},{"subject":"음비3","teacher":"엄성일"},{"subject":"세트B","teacher":""}],"화":[{"subject":"화작","teacher":"김도예"},{"subject":"운동","teacher":"하정한"},{"subject":"세트B","teacher":""},{"subject":"경수C","teacher":"김미정"},{"subject":"화작","teacher":"이화영"},{"subject":"과사A","teacher":"김주연"},{"subject":"윤사E","teacher":"감은채"}],"수":[{"subject":"경수C","teacher":"김미정"},{"subject":"과사A","teacher":"김주연"},{"subject":"운동","teacher":"하정한"},{"subject":"윤사E","teacher":"감은채"},{"subject":"동아","teacher":"이화영"}],"목":[{"subject":"세트F","teacher":""},{"subject":"경수C","teacher":"김미정"},{"subject":"진로3","teacher":"권률원"},{"subject":"세트B","teacher":""},{"subject":"환경(독)","teacher":"신지은"},{"subject":"미분D","teacher":"이지리"}],"금":[{"subject":"영독작","teacher":"이영광"},{"subject":"과사A","teacher":"박혜정"},{"subject":"윤사E","teacher":"감은채"},{"subject":"환경(독)","teacher":"신지은"},{"subject":"미분D","teacher":"이지리"},{"subject":"세트F","teacher":""},{"subject":"화작","teacher":"김도예"}]}}}</script>
+<script>
+(function(){
+  "use strict";
+  const DATA = JSON.parse(document.getElementById('raw-data').textContent);
+  const DAYS = DATA.days;
+  const DAY_PERIODS = DATA.dayPeriods;
+  const MAX_PERIOD = Math.max(...Object.values(DAY_PERIODS));
+  const NON_SUBJECTS = new Set(['자율','동아','창체']);
+
+  // ---------- 학교 정보 (학기·학교가 바뀌면 여기만 고치면 됩니다) ----------
+  const SCHOOL = '여수여자고등학교';
+  const SCHOOL_SHORT = '여수여자고';
+  const YEAR_LABEL = '2026학년도';
+  const SEMESTER = '2026학년도 2학기';
+  const SEM_SHORT = '2026-2';
+  document.title = `${SCHOOL_SHORT} 시간표`;
+  document.querySelectorAll('[data-school]').forEach(el=> el.textContent = SCHOOL);
+  document.querySelectorAll('[data-semester]').forEach(el=> el.textContent = SEMESTER);
+
+  // ---------- theme ----------
+  // Always start on the light/white theme regardless of the visitor's OS setting —
+  // the toggle button still lets anyone switch to dark manually.
+  const root = document.documentElement;
+  root.setAttribute('data-theme', 'light');
+  function isDarkMode(){
+    return root.getAttribute('data-theme') === 'dark';
+  }
+  document.getElementById('themeToggle').addEventListener('click', ()=>{
+    const cur = root.getAttribute('data-theme');
+    root.setAttribute('data-theme', cur === 'dark' ? 'light' : 'dark');
+    // colors are theme-dependent (light/dark lightness) — repaint whichever view is showing
+    if(mode==='teacher' || mode==='class') render();
+    if(document.getElementById('view-sub').style.display !== 'none') renderSub();
+  });
+
+  // ---------- color palette ----------
+  // Hand-picked, evenly-recognizable hues (skips the muddy yellow-green band around 60-110deg
+  // that reads as drab once desaturated into a pastel chip) so every class/subject pops and
+  // stays clearly different from its neighbors.
+  const HUES = [8, 28, 46, 128, 150, 170, 190, 206, 222, 240, 258, 278, 298, 318, 338, 356];
+  function hashStr(s){ let h=0; for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) >>> 0; } return h; }
+  function colorFor(key){
+    if(!key) return {bg:'transparent', fg:'var(--muted)'};
+    const bucket = hashStr(key) % HUES.length;
+    const hue = HUES[bucket];
+    const dark = isDarkMode();
+    const bg = dark ? `hsl(${hue}, 58%, 26%)` : `hsl(${hue}, 88%, 92%)`;
+    const fg = dark ? `hsl(${hue}, 90%, 82%)` : `hsl(${hue}, 72%, 38%)`;
+    return {bg, fg};
+  }
+
+  let colorsOn = true;
+
+  // ---------- state ----------
+  let mode = 'teacher'; // teacher | class
+  let currentIndex = 0;
+
+  const teacherNames = DATA.teachers.map(t=>t.name);
+  const classNames = DATA.classList;
+
+  function listFor(m){ return m==='teacher' ? teacherNames : classNames; }
+  function dataFor(m, name){
+    if(m==='teacher') return DATA.teachers.find(t=>t.name===name);
+    return { name, schedule: DATA.classes[name] };
+  }
+  function teacherByName(name){ return DATA.teachers.find(t=>t.name===name); }
+
+  // ---------- tabs ----------
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  function setTab(tab){
+    tabBtns.forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+    document.getElementById('view-home').style.display = tab==='home' ? '' : 'none';
+    document.getElementById('view-lookup').style.display = (tab==='teacher'||tab==='class') ? '' : 'none';
+    document.getElementById('view-sub').style.display = tab==='sub' ? '' : 'none';
+    document.getElementById('view-log').style.display = tab==='log' ? '' : 'none';
+    if(tab==='teacher' || tab==='class'){
+      mode = tab;
+      currentIndex = 0;
+      document.getElementById('lookupLabel').textContent = tab==='teacher' ? '🔍 이름 검색' : '🔍 학급 검색';
+      buildPicker();
+      render();
+    }
+    if(tab==='sub'){ renderSub(); }
+    if(tab==='log'){ buildLogTeacherSelect(); renderLog(); }
+    if(tab==='home'){ updateStats(); }
+  }
+  tabBtns.forEach(b=>{
+    if(b.disabled) return;
+    b.addEventListener('click', ()=> setTab(b.dataset.tab));
+  });
+  document.querySelectorAll('[data-goto]').forEach(b=>{
+    b.addEventListener('click', ()=> setTab(b.dataset.goto));
+  });
+
+  // ---------- picker / search (교사·학급 조회) ----------
+  const pickerSelect = document.getElementById('pickerSelect');
+  const searchBox = document.getElementById('searchBox');
+  const autocomplete = document.getElementById('autocomplete');
+
+  function buildPicker(){
+    const list = listFor(mode);
+    pickerSelect.innerHTML = list.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+    pickerSelect.value = currentIndex;
+    searchBox.placeholder = mode==='teacher' ? '이름 검색' : '학급 검색 (예: 1-1)';
+    searchBox.value = '';
+    document.getElementById('teacherOnlyBtns').style.display = mode==='teacher' ? '' : 'none';
+    document.getElementById('lookupHint').textContent = mode==='teacher'
+      ? '이름을 검색해서 Enter를 누르거나, 오른쪽 목록에서 선택하면 시간표가 바로 나옵니다. 인쇄는 A4 한 장, 명함 인쇄는 같은 시간표를 카드 8장으로 뽑아 잘라 쓸 수 있어요.'
+      : '학급을 검색해서 Enter를 누르거나, 오른쪽 목록에서 선택하면 시간표가 바로 나옵니다.';
+  }
+  pickerSelect.addEventListener('change', ()=>{
+    currentIndex = parseInt(pickerSelect.value,10);
+    render();
+  });
+  document.getElementById('prevBtn').addEventListener('click', ()=>{
+    const list = listFor(mode);
+    currentIndex = (currentIndex - 1 + list.length) % list.length;
+    pickerSelect.value = currentIndex;
+    render();
+  });
+  document.getElementById('nextBtn').addEventListener('click', ()=>{
+    const list = listFor(mode);
+    currentIndex = (currentIndex + 1) % list.length;
+    pickerSelect.value = currentIndex;
+    render();
+  });
+  searchBox.addEventListener('input', ()=>{
+    const q = searchBox.value.trim();
+    if(!q){ autocomplete.style.display='none'; return; }
+    const list = listFor(mode);
+    const hits = list.map((n,i)=>({n,i})).filter(x=>x.n.includes(q)).slice(0,20);
+    if(hits.length===0){ autocomplete.style.display='none'; return; }
+    autocomplete.innerHTML = hits.map(h=>`<div data-i="${h.i}">${h.n}</div>`).join('');
+    autocomplete.style.display='block';
+  });
+  autocomplete.addEventListener('click', (e)=>{
+    const t = e.target.closest('[data-i]');
+    if(!t) return;
+    currentIndex = parseInt(t.dataset.i,10);
+    pickerSelect.value = currentIndex;
+    autocomplete.style.display='none';
+    searchBox.value='';
+    render();
+  });
+  function pickByQuery(q, list){
+    q = q.trim();
+    if(!q) return -1;
+    let idx = list.findIndex(n=>n===q);
+    if(idx>-1) return idx;
+    const hits = list.map((n,i)=>i).filter(i=>list[i].includes(q));
+    return hits.length ? hits[0] : -1;
+  }
+  searchBox.addEventListener('keydown', (e)=>{
+    if(e.key !== 'Enter') return;
+    const idx = pickByQuery(searchBox.value, listFor(mode));
+    if(idx>-1){
+      currentIndex = idx;
+      pickerSelect.value = idx;
+      autocomplete.style.display='none';
+      searchBox.value='';
+      render();
+    }
+  });
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.search-wrap')){ autocomplete.style.display='none'; subAutocomplete.style.display='none'; }
+  });
+
+  // ---------- rendering a single schedule card ----------
+  function scheduleTableHTML(schedule, colorKeyFn){
+    const rows = [];
+    for(let p=1; p<=MAX_PERIOD; p++){
+      let tds = `<td class="period">${p}</td>`;
+      DAYS.forEach(d=>{
+        if(p > DAY_PERIODS[d]){
+          tds += `<td class="cell blocked"></td>`;
+          return;
+        }
+        const cell = schedule[d][p-1];
+        if(!cell){
+          tds += `<td class="cell empty"></td>`;
+        } else {
+          const key = colorKeyFn(cell);
+          const c = colorsOn ? colorFor(key) : {bg:'#f1f3f0', fg:'#555'};
+          tds += `<td class="cell" style="background:${c.bg}; border-left-color:${c.fg}"><div class="subj" style="color:${c.fg}">${cell.subject||''}</div><div class="sub" style="color:${c.fg}">${cell.other||''}</div></td>`;
+        }
+      });
+      rows.push(`<tr>${tds}</tr>`);
+    }
+    return `<div class="table-scroll"><table class="grid">
+      <tr><th class="period-col">교시</th>${DAYS.map(d=>`<th>${d}</th>`).join('')}</tr>
+      ${rows.join('')}
+    </table></div>`;
+  }
+
+  function normalize(m, entity){
+    const sched = {};
+    DAYS.forEach(d=>{
+      sched[d] = entity.schedule[d].map(cell=>{
+        if(!cell) return null;
+        if(m==='teacher') return {subject:cell.subject, other:cell.class, colorKey:cell.class};
+        return {subject:cell.subject, other:cell.teacher, colorKey:cell.subject};
+      });
+    });
+    return sched;
+  }
+
+  function render(){
+    const list = listFor(mode);
+    const name = list[currentIndex];
+    const entity = dataFor(mode, name);
+    const sched = normalize(mode, entity);
+    const title = mode==='teacher'
+      ? `<span class="who">${name}</span><span class="suffix">선생님</span>`
+      : `<span class="who">${name}</span><span class="suffix">학급 시간표</span>`;
+    const tags = mode==='teacher' && entity.hours
+      ? `<div class="tags"><span class="tag">주당 시수 ${entity.hours}</span></div>` : '';
+    document.getElementById('mainCard').innerHTML = `
+      <div class="card-top">
+        <span class="sem">${SEMESTER}</span>
+        ${title}
+        ${tags}
+      </div>
+      ${scheduleTableHTML(sched, c=>c.colorKey)}
+    `;
+  }
+
+  // ---------- printing: open a real, unrestricted browser tab ----------
+  // This page can run inside an embedded viewer that blocks window.print()/downloads
+  // outright, so printing is done in a separate tab instead: we build a small
+  // self-contained HTML document (reusing this page's own CSS) and open it with
+  // window.open(). That tab is a normal top-level page, so the browser's native
+  // print dialog (with a "Save as PDF" destination) works there even if it
+  // wouldn't work here.
+  const PAGE_CSS = document.querySelector('style').innerHTML;
+  function openPrintWindow(innerHTML, docTitle, extraCSS, hint){
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>${docTitle}</title><style>
+      ${PAGE_CSS}
+      body{background:#fff;}
+      .print-toolbar{position:sticky; top:0; display:flex; align-items:center; gap:12px; background:#fff; border-bottom:1px solid var(--line); padding:12px 18px; z-index:50;}
+      .print-toolbar button{border:none; background:var(--primary); color:#fff; padding:10px 18px; border-radius:9px; font-weight:700; font-size:14px;}
+      .print-toolbar span{color:var(--muted); font-size:12.5px;}
+      .print-sheet{max-width:900px; margin:22px auto; padding:0 16px 40px;}
+      @media print{ .print-toolbar{display:none;} .print-sheet{margin:0; padding:0; max-width:none;} }
+      ${extraCSS||''}
+    </style></head><body>
+      <div class="print-toolbar">
+        <button onclick="window.print()">🖨️ 인쇄 / PDF로 저장</button>
+        <span>${hint || "인쇄 대화상자의 '대상(프린터)'을 'PDF로 저장'으로 바꾸면 PDF 파일로 저장할 수 있어요."}</span>
+      </div>
+      <div class="print-sheet">${innerHTML}</div>
+      <script>
+        window.addEventListener('load', function(){ setTimeout(function(){ try{ window.print(); }catch(e){} }, 250); });
+      <\/script>
+    </body></html>`;
+    const blob = new Blob([html], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    const win = window.open(url, '_blank');
+    if(!win){
+      alert('팝업이 차단되어 인쇄 창을 열지 못했습니다. 브라우저 주소창의 팝업 차단 아이콘을 눌러 이 사이트의 팝업을 허용한 뒤 다시 눌러주세요.');
+      URL.revokeObjectURL(url);
+      return;
+    }
+    setTimeout(()=> URL.revokeObjectURL(url), 60000);
+  }
+
+  // ---------- print: single ----------
+  document.getElementById('printBtn').addEventListener('click', ()=>{
+    openPrintWindow(document.getElementById('mainCard').outerHTML, '시간표 인쇄');
+  });
+
+  // ---------- print: business cards (8-up) ----------
+  document.getElementById('cardPrintBtn').addEventListener('click', ()=>{
+    const list = listFor(mode);
+    const name = list[currentIndex];
+    const entity = dataFor(mode, name);
+    const sched = normalize(mode, entity);
+    const miniTable = (()=>{
+      const rows = [];
+      for(let p=1;p<=MAX_PERIOD;p++){
+        let tds = `<td>${p}</td>`;
+        DAYS.forEach(d=>{
+          if(p>DAY_PERIODS[d]){ tds+='<td></td>'; return; }
+          const cell = sched[d][p-1];
+          tds += `<td>${cell? (cell.subject||'') : ''}</td>`;
+        });
+        rows.push(`<tr>${tds}</tr>`);
+      }
+      return `<table class="mini"><tr><th></th>${DAYS.map(d=>`<th>${d}</th>`).join('')}</tr>${rows.join('')}</table>`;
+    })();
+    const card = `<div class="card-mini">
+      <div class="m-top"><span class="m-name">${name}${mode==='teacher'?' 선생님':''}</span><span class="m-sem">${SEM_SHORT}</span></div>
+      ${miniTable}
+    </div>`;
+    openPrintWindow(`<div class="cards-grid">${Array(8).fill(card).join('')}</div>`, '명함 인쇄');
+  });
+
+  // ---------- print: all (master grid) ----------
+  document.getElementById('allPrintBtn').addEventListener('click', ()=>{
+    const list = listFor(mode);
+    let header = `<tr><th rowspan="2">${mode==='teacher'?'교사명':'학급'}</th>`;
+    DAYS.forEach(d=> header += `<th colspan="${DAY_PERIODS[d]}">${d}</th>`);
+    header += `</tr><tr>`;
+    DAYS.forEach(d=>{ for(let p=1;p<=DAY_PERIODS[d];p++) header += `<th>${p}</th>`; });
+    header += `</tr>`;
+
+    const rows = list.map(name=>{
+      const entity = dataFor(mode, name);
+      const sched = normalize(mode, entity);
+      let tds = `<td class="name">${name}</td>`;
+      DAYS.forEach(d=>{
+        for(let p=1;p<=DAY_PERIODS[d];p++){
+          const cell = sched[d][p-1];
+          tds += `<td>${cell? `${cell.other||''}<br>${cell.subject||''}` : ''}</td>`;
+        }
+      });
+      return `<tr>${tds}</tr>`;
+    }).join('');
+
+    openPrintWindow(
+      `<h3 style="font-size:15px;margin:0 0 10px;">${SEMESTER} · ${mode==='teacher'?'교사':'학급'} 전체 시간표</h3><table class="master">${header}${rows}</table>`,
+      '전체 시간표 인쇄'
+    );
+  });
+
+  // =====================================================================
+  // 결보강 기록 저장 · 날짜 계산
+  // =====================================================================
+  // 기록은 이 브라우저(localStorage)에 저장된다. 서버가 없는 정적 페이지라
+  // 다른 컴퓨터와는 백업 파일(JSON)로 주고받는다.
+  const LS_RECORDS = 'timetable.subRecords.v1';
+  const LS_META = 'timetable.teacherMeta.v1';
+  function lsGet(key, fallback){
+    try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; }
+  }
+  function lsSet(key, value){
+    try{ localStorage.setItem(key, JSON.stringify(value)); return true; }catch(e){ return false; }
+  }
+  let records = lsGet(LS_RECORDS, []);
+  if(!Array.isArray(records)) records = [];
+  let teacherMeta = lsGet(LS_META, {}) || {};
+  let storageWarned = false;
+  function saveRecords(){
+    if(!lsSet(LS_RECORDS, records) && !storageWarned){
+      storageWarned = true;
+      alert('이 브라우저에 기록을 저장하지 못했습니다. 창을 닫기 전에 「결보강 일지」 탭에서 백업 파일을 저장해 두세요.');
+    }
+  }
+  function saveMeta(){ lsSet(LS_META, teacherMeta); }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+  function esc(s){
+    return String(s==null ? '' : s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  const WEEK = ['일','월','화','수','목','금','토'];
+  const pad2 = n=> String(n).padStart(2,'0');
+  function parseDate(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+  function fmtDate(dt){ return `${dt.getFullYear()}-${pad2(dt.getMonth()+1)}-${pad2(dt.getDate())}`; }
+  function addDays(s, n){ const dt = parseDate(s); dt.setDate(dt.getDate()+n); return fmtDate(dt); }
+  function dayOf(s){ return WEEK[parseDate(s).getDay()]; }
+  function md(s){ const dt = parseDate(s); return `${dt.getMonth()+1}/${dt.getDate()}`; }
+  function mdDay(s){ return `${md(s)}(${dayOf(s)})`; }
+  // s가 속한 주(월~금)에서 day 요일에 해당하는 날짜
+  function weekDate(s, day){ return addDays(s, WEEK.indexOf(day) - parseDate(s).getDay()); }
+  function todayStr(){ return fmtDate(new Date()); }
+  function nextSchoolDay(s){ let i=0; while(!DAYS.includes(dayOf(s)) && i++<7) s = addDays(s, 1); return s; }
+
+  // ---------- 교과 분류 ----------
+  const CATEGORIES = ['국어','수학','영어','사회','과학','체육','예술','제2외국어','교양','기타'];
+  const CATEGORY_RULES = [
+    ['국어', /^(공국|독작|독글|화작|심국|고읽|문학|언매|국어)/],
+    ['영어', /^(영어|영독|영권|세문영|영회)/],
+    ['수학', /^(수학|미적|미분|기하|경수|확통|수Ⅰ|수Ⅱ)/],
+    ['과학', /^(물|생|화Ⅰ|화Ⅱ|지Ⅰ|지Ⅱ|통과|과탐|과사|기후|과학)/],
+    ['사회', /^(한국사|세계|여행|세지|한지|통사|사문|고윤|정법|정치|인윤|윤사|경제|역사|동사)/],
+    ['체육', /^(체육|스포츠|운동)/],
+    ['예술', /^(음비|미비|음악|미술)/],
+    ['제2외국어', /^(일회화|중회화|일본|중국)/],
+    ['교양', /^(보\d|논술|심리|진로|아동|교육|이해|직업|환경|보건)/],
+  ];
+  function categoryOfSubject(subj){
+    for(const [cat, re] of CATEGORY_RULES) if(re.test(subj)) return cat;
+    return '기타';
+  }
+  const subjectCountCache = new Map();
+  function subjectCounts(name){
+    if(subjectCountCache.has(name)) return subjectCountCache.get(name);
+    const t = teacherByName(name); const cnt = {};
+    if(t) DAYS.forEach(d=> t.schedule[d].forEach(c=>{
+      if(c && c.subject && !NON_SUBJECTS.has(c.subject)) cnt[c.subject] = (cnt[c.subject]||0) + 1;
+    }));
+    subjectCountCache.set(name, cnt);
+    return cnt;
+  }
+  function subjectSetFor(name){ return new Set(Object.keys(subjectCounts(name))); }
+  function mainSubjectOf(name){
+    const cnt = subjectCounts(name);
+    return Object.keys(cnt).sort((a,b)=> cnt[b]-cnt[a])[0] || '';
+  }
+  function autoCategory(name){
+    const cnt = subjectCounts(name); const byCat = {};
+    Object.keys(cnt).forEach(s=>{ const c = categoryOfSubject(s); byCat[c] = (byCat[c]||0) + cnt[s]; });
+    return Object.keys(byCat).sort((a,b)=> byCat[b]-byCat[a])[0] || '기타';
+  }
+  function catOf(name){ return (teacherMeta[name] && teacherMeta[name].cat) || autoCategory(name); }
+  function extOf(name){ return (teacherMeta[name] && teacherMeta[name].ext) || ''; }
+
+  // ---------- 기록을 반영한 수업 여부 ----------
+  function baseCell(name, date, p){
+    const t = teacherByName(name); const day = dayOf(date);
+    if(!t || !t.schedule[day]) return null;
+    return t.schedule[day][p-1] || null;
+  }
+  // 원래 시간표에 저장된 결보강 기록(보강·교체)까지 반영해서, 그 날 그 교시에 수업 중인지
+  function busyAt(name, date, p, recs){
+    let vacated = false, filled = false;
+    for(const r of recs){
+      if(r.absent===name && r.date===date && r.period===p) vacated = true;
+      if(r.type==='교체' && r.sub===name && r.subDate===date && r.subPeriod===p) vacated = true;
+      if(r.sub===name && r.date===date && r.period===p) filled = true;
+      if(r.type==='교체' && r.absent===name && r.subDate===date && r.subPeriod===p) filled = true;
+    }
+    return filled || (!!baseCell(name, date, p) && !vacated);
+  }
+  function absentOn(name, date, recs){ return recs.some(r=> r.absent===name && r.date===date); }
+  function dayLoad(name, date, recs){
+    const n = DAY_PERIODS[dayOf(date)] || 0; let c = 0;
+    for(let p=1; p<=n; p++) if(busyAt(name, date, p, recs)) c++;
+    return c;
+  }
+  // p교시를 하나 더 맡으면 몇 시간 연속 수업이 되는지
+  function runWith(name, date, p, recs){
+    const n = DAY_PERIODS[dayOf(date)] || 0;
+    const busy = q=> q===p || busyAt(name, date, q, recs);
+    let a = p, b = p;
+    while(a>1 && busy(a-1)) a--;
+    while(b<n && busy(b+1)) b++;
+    return b - a + 1;
+  }
+  function findRecord(absent, date, p){ return records.find(r=> r.absent===absent && r.date===date && r.period===p); }
+  // 결보강 종류: same 동과 보강 · other 타과 보강 · swap 수업 교체
+  const KIND_LABEL = {same:'동과 보강', other:'타과 보강', swap:'수업 교체'};
+  const KIND_SHORT = {same:'동과', other:'타과', swap:'교체'};
+  const KIND_NOTE = {same:'동과보강', other:'타과보강', swap:'수업교체'};
+  function kindOf(r){ return r.kind || (r.type==='교체' ? 'swap' : (r.note==='타과보강' ? 'other' : 'same')); }
+
+  // =====================================================================
+  // 보강 · 교체 배정
+  // =====================================================================
+  let subTeacherIdx = 0;
+  let subStart = nextSchoolDay(todayStr());
+  let subEnd = '';
+  let subDate = subStart;
+  let subReason = '출장';
+  let subScope = 'all';           // all: 종일 | part: 일부 교시
+  let partPeriods = new Set();    // 일부 교시일 때 빠지는 교시
+  let subPeriod = null;           // 지금 보고 있는 교시
+  let subCtx = null;              // 후보 클릭 시 사용할 현재 교시 정보
+
+  const subTeacherSelect = document.getElementById('subTeacherSelect');
+  const subSearchBox = document.getElementById('subSearchBox');
+  const subAutocomplete = document.getElementById('subAutocomplete');
+  const subStartInput = document.getElementById('subStart');
+  const subEndInput = document.getElementById('subEnd');
+  const subReasonSelect = document.getElementById('subReason');
+  const scopePick = document.getElementById('scopePick');
+  const subResults = document.getElementById('subResults');
+
+  function resetSubSelection(){ partPeriods = new Set(); subPeriod = null; }
+  function pickSubTeacher(idx){
+    subTeacherIdx = idx;
+    subTeacherSelect.value = idx;
+    subAutocomplete.style.display='none';
+    subSearchBox.value='';
+    resetSubSelection();
+    renderSub();
+  }
+
+  function buildSubTeacherSelect(){
+    subTeacherSelect.innerHTML = teacherNames.map((n,i)=>`<option value="${i}">${n}</option>`).join('');
+    subTeacherSelect.value = subTeacherIdx;
+  }
+  subTeacherSelect.addEventListener('change', ()=> pickSubTeacher(parseInt(subTeacherSelect.value,10)));
+  subSearchBox.addEventListener('input', ()=>{
+    const q = subSearchBox.value.trim();
+    if(!q){ subAutocomplete.style.display='none'; return; }
+    const hits = teacherNames.map((n,i)=>({n,i})).filter(x=>x.n.includes(q)).slice(0,20);
+    if(hits.length===0){ subAutocomplete.style.display='none'; return; }
+    subAutocomplete.innerHTML = hits.map(h=>`<div data-i="${h.i}">${h.n}</div>`).join('');
+    subAutocomplete.style.display='block';
+  });
+  subAutocomplete.addEventListener('click', (e)=>{
+    const t = e.target.closest('[data-i]');
+    if(!t) return;
+    pickSubTeacher(parseInt(t.dataset.i,10));
+  });
+  subSearchBox.addEventListener('keydown', (e)=>{
+    if(e.key !== 'Enter') return;
+    const idx = pickByQuery(subSearchBox.value, teacherNames);
+    if(idx>-1) pickSubTeacher(idx);
+  });
+
+  subStartInput.value = subStart;
+  subStartInput.addEventListener('change', ()=>{
+    if(!subStartInput.value) return;
+    subStart = subStartInput.value;
+    subDate = subStart;
+    if(subEnd && subEnd < subStart){ subEnd = ''; subEndInput.value = ''; }
+    subPeriod = null;
+    renderSub();
+  });
+  subEndInput.addEventListener('change', ()=>{
+    subEnd = subEndInput.value;
+    renderSub();
+  });
+  subReasonSelect.addEventListener('change', ()=>{
+    subReason = subReasonSelect.value;
+    // 이번 결근(선택한 기간)의 기존 기록 사유도 함께 바꿈
+    const name = teacherNames[subTeacherIdx]; const dates = absenceDates();
+    let changed = false;
+    records.forEach(r=>{ if(r.absent===name && dates.includes(r.date)){ r.reason = subReason; changed = true; } });
+    if(changed) saveRecords();
+    renderSub();
+  });
+  function buildScopePick(){
+    scopePick.querySelectorAll('button').forEach(b=> b.classList.toggle('active', b.dataset.scope===subScope));
+  }
+  scopePick.addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-scope]'); if(!b) return;
+    subScope = b.dataset.scope;
+    buildScopePick();
+    subPeriod = null;
+    renderSub();
+  });
+
+  // 선택한 기간의 수업일(월~금)
+  function absenceDates(){
+    const end = subEnd && subEnd >= subStart ? subEnd : subStart;
+    const out = []; let d = subStart, guard = 0;
+    while(d <= end && guard++ < 62){ if(DAYS.includes(dayOf(d))) out.push(d); d = addDays(d, 1); }
+    return out;
+  }
+  function taughtPeriods(name, date){
+    const t = teacherByName(name); const day = dayOf(date);
+    if(!t || !t.schedule[day]) return [];
+    const out = [];
+    t.schedule[day].forEach((cell,i)=>{ if(cell) out.push({period:i+1, cell}); });
+    return out;
+  }
+  function isAbsentPeriod(p){ return subScope==='all' || partPeriods.has(p); }
+  // 결근 선생님이 date p교시에 학교에 없는지 (이번 결근 기간 기준)
+  function awayAt(date, p){ return absenceDates().includes(date) && isAbsentPeriod(p); }
+
+  // ---------- 교과 분류 · 내선 편집 ----------
+  const metaGrid = document.getElementById('metaGrid');
+  function renderMeta(){
+    metaGrid.innerHTML = teacherNames.map(n=>{
+      const subs = Object.keys(subjectCounts(n)).join(', ');
+      const cur = catOf(n);
+      return `<div class="meta-item"><b>${esc(n)}</b><span class="ms" title="${esc(subs)}">${esc(subs)||'-'}</span>
+        <select data-meta-cat="${esc(n)}">${CATEGORIES.map(c=>`<option ${c===cur?'selected':''}>${c}</option>`).join('')}</select>
+        <input data-meta-ext="${esc(n)}" placeholder="내선" value="${esc(extOf(n))}"></div>`;
+    }).join('');
+  }
+  document.getElementById('metaPanel').addEventListener('toggle', (e)=>{ if(e.target.open) renderMeta(); });
+  metaGrid.addEventListener('change', (e)=>{
+    const el = e.target;
+    const name = el.dataset.metaCat || el.dataset.metaExt;
+    if(!name) return;
+    teacherMeta[name] = teacherMeta[name] || {};
+    if(el.dataset.metaCat){
+      if(el.value === autoCategory(name)) delete teacherMeta[name].cat; else teacherMeta[name].cat = el.value;
+    } else {
+      teacherMeta[name].ext = el.value.trim();
+    }
+    saveMeta();
+    renderSub();
+  });
+  document.getElementById('metaReset').addEventListener('click', ()=>{
+    if(!confirm('교과 분류를 모두 자동 분류로 되돌릴까요? (내선번호는 그대로 둡니다)')) return;
+    Object.keys(teacherMeta).forEach(n=>{ delete teacherMeta[n].cat; });
+    saveMeta(); renderMeta(); renderSub();
+  });
+
+  // ---------- 화면 ----------
+  function renderSub(){
+    const absentName = teacherNames[subTeacherIdx];
+    if(!teacherByName(absentName)) return;
+    buildScopePick();
+    subReasonSelect.value = subReason;
+    const dates = absenceDates();
+    if(!dates.includes(subDate)) subDate = dates[0];
+
+    const dateBar = document.getElementById('subDates');
+    dateBar.innerHTML = dates.length>1 ? dates.map(d=>{
+      const taught = taughtPeriods(absentName, d).filter(x=> isAbsentPeriod(x.period));
+      const done = taught.filter(x=> findRecord(absentName, d, x.period)).length;
+      return `<button class="date-chip ${d===subDate?'active':''}" data-date="${d}">${mdDay(d)}<span>${done}/${taught.length}</span></button>`;
+    }).join('') : '';
+
+    if(!subDate){
+      subResults.innerHTML = `<div class="no-class">선택한 날짜가 주말입니다. 수업이 있는 날(월~금)을 골라 주세요.</div>`;
+      return;
+    }
+    const day = dayOf(subDate);
+    const taught = taughtPeriods(absentName, subDate);
+    if(taught.length===0){
+      subResults.innerHTML = `<div class="no-class">${absentName} 선생님은 ${mdDay(subDate)}에 수업이 없습니다. 보강이 필요하지 않아요.</div>`;
+      return;
+    }
+    const needed = taught.filter(x=> isAbsentPeriod(x.period));
+    if(subPeriod===null || !needed.some(x=>x.period===subPeriod)){
+      const firstOpen = needed.find(x=> !findRecord(absentName, subDate, x.period));
+      subPeriod = firstOpen ? firstOpen.period : (needed[0] ? needed[0].period : null);
+    }
+    const assignedCount = needed.filter(x=> findRecord(absentName, subDate, x.period)).length;
+
+    const partRow = subScope==='part' ? `<div class="part-row">빠지는 교시를 고르세요:
+      ${taught.map(x=>`<button data-part="${x.period}" class="${partPeriods.has(x.period)?'on':''}">${x.period}교시</button>`).join('')}</div>` : '';
+
+    const tabs = taught.map(({period, cell})=>{
+      const rec = findRecord(absentName, subDate, period);
+      const enabled = isAbsentPeriod(period);
+      const cls = ['ptab', period===subPeriod && enabled ? 'active' : '', rec ? `done k-${kindOf(rec)}` : '', NON_SUBJECTS.has(cell.subject) ? 'nonsub' : ''].join(' ');
+      const to = rec ? `<small class="to">→ ${esc(rec.sub)}<span class="tt">${KIND_SHORT[kindOf(rec)]}</span></small>` : `<small>${enabled ? '미배정' : '수업함'}</small>`;
+      return `<button class="${cls}" data-period="${period}" ${enabled ? '' : 'disabled'}>
+        <b>${period}교시</b><small>${esc(cell.subject)} ${esc(cell.class)}</small>${to}</button>`;
+    }).join('');
+
+    const head = `<div class="card sub-head">
+      <div class="sh-title"><b>${absentName} 선생님 · ${mdDay(subDate)}</b>
+        <span>${esc(subReason)} · 수업 ${taught.length}시간 · 교과 ${catOf(absentName)} · 배정 ${assignedCount}/${needed.length}</span></div>
+      ${partRow}
+      <div class="period-tabs">${tabs}</div>
+      <div class="kind-legend">
+        <span class="k-same"><i></i>동과 보강 · 같은 교과 선생님이 대신 수업</span>
+        <span class="k-other"><i></i>타과 보강 · 다른 교과 선생님이 들어감</span>
+        <span class="k-swap"><i></i>수업 교체 · 다른 시간 수업과 맞바꿈</span>
+      </div>
+    </div>`;
+
+    let detail = '';
+    if(subPeriod===null){
+      detail = `<div class="no-class">${subScope==='part' ? '위에서 빠지는 교시를 먼저 골라 주세요.' : '보강이 필요한 교시가 없습니다.'}</div>`;
+    } else {
+      detail = periodDetailHTML(absentName, subDate, day, subPeriod, taught.find(x=>x.period===subPeriod).cell);
+    }
+
+    const actions = `<div class="sub-actions">
+      <button class="btn-ghost" id="subPrintDaily">${md(subDate)} 결보강 현황 인쇄</button>
+      <button class="btn-primary" id="subPrintForm">🖨️ ${absentName} 선생님 일지 인쇄</button>
+    </div>`;
+
+    subResults.innerHTML = head + detail + actions + messagesHTML(absentName);
+    fitMsgBoxes();
+  }
+
+  // =====================================================================
+  // 쪽지 자동 완성: 배정 내용으로 선생님별 요청 쪽지를 만들어 메신저에 붙여 넣게 함
+  // =====================================================================
+  const LS_SIGN = 'timetable.msgSign.v1';
+  let msgSign = lsGet(LS_SIGN, '') || '';
+  let msgList = [];   // [{to, kinds, text}]
+
+  // 받침 여부에 따라 '으로/로'
+  // 받침 여부에 따라 '을/를'
+  function eul(word){
+    const c = word.charCodeAt(word.length-1);
+    if(c < 0xAC00 || c > 0xD7A3) return word + '을(를)';
+    return word + ((c - 0xAC00) % 28 ? '을' : '를');
+  }
+  function euro(word){
+    const c = word.charCodeAt(word.length-1);
+    if(c < 0xAC00 || c > 0xD7A3) return word + '(으)로';
+    const jong = (c - 0xAC00) % 28;
+    return word + (jong===0 || jong===8 ? '로' : '으로');
+  }
+  // 쪽지 표기: 날짜 「10월 22일(목)」, 반 [1-4반], 과목 「역사」, 종류 【동과 보강】
+  const LS_MSGMODE = 'timetable.msgMode.v1';
+  let msgMode = lsGet(LS_MSGMODE, 'self') === 'staff' ? 'staff' : 'self';   // self: 결근 선생님 본인 · staff: 담당자 대신
+  const BAR = ' ｜ ';
+  function mdLong(s){ const dt = parseDate(s); return `${dt.getMonth()+1}월 ${dt.getDate()}일(${dayOf(s)})`; }
+  function deptOf(name){ const c = catOf(name); return ['국어','수학','영어','사회','과학','체육'].includes(c) ? `${c}과 ` : ''; }
+  const clsTag = c=> `[${c}반]`;
+  const subjTag = s=> `「${s}」`;
+  function line(date, p, cls, rest){ return ` ▶ ${mdLong(date)} ${p}교시${BAR}${clsTag(cls)}${rest ? BAR + rest : ''}`; }
+  function rangeText(dates){ return dates.length>1 ? `${mdLong(dates[0])}~${mdLong(dates[dates.length-1])}` : mdLong(dates[0]); }
+  function kindTitle(list){
+    const hasCover = list.some(r=> r.type!=='교체'), hasSwap = list.some(r=> r.type==='교체');
+    return hasCover && hasSwap ? '보강·수업 교체' : hasSwap ? '수업 교체' : '보강';
+  }
+
+  function buildMessages(absentName){
+    const dates = absenceDates();
+    const recs = sortRecs(records.filter(r=> r.absent===absentName && dates.includes(r.date)));
+    if(!recs.length) return [];
+    const self = msgMode==='self';
+    const staff = msgSign.trim();
+    const reason = recs[0].reason || '결근';
+    const period = rangeText(dates);
+    const out = [];
+
+    // 보강·교체 선생님마다 한 통
+    const bySub = new Map();
+    recs.forEach(r=>{ if(!bySub.has(r.sub)) bySub.set(r.sub, []); bySub.get(r.sub).push(r); });
+    bySub.forEach((list, sub)=>{
+      const what = kindTitle(list);
+      const L = [`[${what} 요청] ${sub} 선생님께`, '', `${sub} 선생님, 안녕하십니까.`];
+      if(self){
+        L.push(`${deptOf(absentName)}${absentName}입니다.`);
+        L.push(`${period} ${euro(reason)} 부득이하게 수업을 진행할 수 없게 되어, 아래와 같이 ${eul(what)} 정중히 부탁드립니다.`);
+      } else {
+        if(staff) L.push(`${staff}입니다.`);
+        L.push(`${absentName} 선생님께서 ${period} ${euro(reason)} 수업을 진행하실 수 없게 되어, 아래와 같이 ${eul(what)} 정중히 부탁드립니다.`);
+      }
+      ['same','other'].forEach(k=>{
+        const items = list.filter(r=> r.type!=='교체' && kindOf(r)===k);
+        if(!items.length) return;
+        L.push('', `【${KIND_LABEL[k]}】`);
+        items.forEach(r=> L.push(line(r.date, r.period, r.cls, subjTag(r.subject))));
+        if(k==='other') L.push(self ? ' ※ 학습 자료(과제)는 미리 전달드리겠습니다.' : ` ※ 학습 자료(과제)는 ${absentName} 선생님께서 미리 전달하실 예정입니다.`);
+      });
+      const swaps = list.filter(r=> r.type==='교체');
+      if(swaps.length){
+        L.push('', `【수업 교체】 아래 두 시간을 서로 맞바꾸어 주시면 감사하겠습니다.`);
+        swaps.forEach((r,i)=>{
+          if(i) L.push('');
+          L.push(line(r.date, r.period, r.cls, `선생님께서 ${subjTag(r.subSubject)} 수업 (원래 ${self ? '제' : absentName + ' 선생님'} ${subjTag(r.subject)} 시간)`));
+          L.push(` ◀ ${mdLong(r.subDate)} ${r.subPeriod}교시${BAR}${clsTag(r.cls)}${BAR}${self ? '제가' : absentName + ' 선생님께서'} ${subjTag(r.subject)} 수업 (원래 선생님 ${subjTag(r.subSubject)} 시간)`);
+        });
+      }
+      L.push('');
+      if(self){
+        L.push('바쁘신 중에 번거로운 부탁을 드려 송구합니다.', '협조해 주셔서 진심으로 감사드립니다.', '', `${absentName} 드림`);
+      } else {
+        L.push('바쁘신 중에 협조해 주셔서 진심으로 감사드립니다.');
+        if(staff) L.push('', `${staff} 드림`);
+      }
+      out.push({to:`${sub} 선생님께`, kinds:[...new Set(list.map(kindOf))], text:L.join('\n')});
+    });
+
+    // 전체 정리: 본인이 보낼 때는 교무부 보고용, 담당자가 보낼 때는 결근 선생님께 안내
+    const S = [];
+    if(self){
+      S.push(`[결보강 내역 보고] ${deptOf(absentName)}${absentName}`, '', `기간: ${period}${BAR}사유: ${reason}`);
+    } else {
+      S.push(`[결보강 처리 안내] ${absentName} 선생님께`, '', `${absentName} 선생님, 안녕하십니까.${staff ? ` ${staff}입니다.` : ''}`,
+        `${period} ${dates.length>1 ? reason + ' 기간의' : euro(reason) + ' 비게 된'} 수업은 아래와 같이 처리하였음을 안내드립니다.`);
+    }
+    ['same','other','swap'].forEach(k=>{
+      const items = recs.filter(r=> kindOf(r)===k);
+      if(!items.length) return;
+      S.push('', `【${KIND_LABEL[k]}】`);
+      items.forEach(r=>{
+        if(k==='swap'){
+          S.push(line(r.date, r.period, r.cls, `${subjTag(r.subject)} → ${r.sub} 선생님 ${subjTag(r.subSubject)}`));
+          S.push(` ◀ ${mdLong(r.subDate)} ${r.subPeriod}교시${BAR}${clsTag(r.cls)}${BAR}${self ? '본인이' : '선생님께서'} ${subjTag(r.subject)} 수업 (원래 ${r.sub} 선생님 ${subjTag(r.subSubject)} 시간)`);
+        } else {
+          S.push(line(r.date, r.period, r.cls, `${subjTag(r.subject)} → ${r.sub} 선생님`));
+        }
+      });
+    });
+    const open = [];
+    dates.forEach(d=> taughtPeriods(absentName, d).forEach(x=>{
+      if(isAbsentPeriod(x.period) && !findRecord(absentName, d, x.period)) open.push(line(d, x.period, x.cell.class, subjTag(x.cell.subject)));
+    }));
+    if(open.length){ S.push('', `【미배정】 아직 정하지 못한 수업 ${open.length}시간`); open.forEach(s=> S.push(s)); }
+    S.push('');
+    if(self){
+      S.push('위와 같이 결보강을 협의하였음을 보고드립니다.', '', `${absentName} 드림`);
+    } else {
+      S.push('학습 자료나 전달 사항이 있으시면 보강 선생님께 미리 전달 부탁드립니다.', '감사합니다.');
+      if(staff) S.push('', `${staff} 드림`);
+    }
+    out.push({to: self ? '교무부 보고용 (결보강 내역)' : `${absentName} 선생님께`, kinds:['absent'], text:S.join('\n')});
+    return out;
+  }
+
+  function messagesHTML(absentName){
+    msgList = buildMessages(absentName);
+    const body = msgList.length ? `<div class="msg-grid">${msgList.map((m,i)=>{
+        const tags = m.kinds.map(k=> k==='absent'
+          ? `<span class="tt k-absent">${msgMode==='self' ? '보고용 정리' : '결근 선생님 안내'}</span>`
+          : `<span class="tt k-${k}">${KIND_SHORT[k]}</span>`).join('');
+        return `<div class="msg-item">
+          <div class="mi-top"><b>${esc(m.to)}</b>${tags}<span class="spacer"></span>
+            <button class="btn-primary mi-copy" data-copy="${i}">복사</button></div>
+          <textarea data-msg="${i}" rows="8" spellcheck="false">${esc(m.text)}</textarea>
+        </div>`;
+      }).join('')}</div>`
+      : `<div class="cand-empty">위에서 보강·교체 선생님을 배정하면 선생님별 요청 쪽지가 여기에 자동으로 만들어집니다.</div>`;
+    return `<div class="card msg-card">
+      <div class="msg-head">
+        <div class="mh-title"><b>💬 쪽지 자동 완성</b>
+          <span>배정한 내용으로 선생님별 쪽지를 만들었어요. 「복사」를 누른 뒤 메신저 쪽지 창에 붙여 넣으세요(Ctrl+V). 내용은 상자 안에서 고쳐 쓸 수 있어요.</span></div>
+        <div class="mh-opts">
+          <div class="day-pick" id="msgModePick">
+            <button data-mode="self" class="${msgMode==='self' ? 'active' : ''}">결근 선생님 본인이 보냄</button>
+            <button data-mode="staff" class="${msgMode==='staff' ? 'active' : ''}">담당자가 대신 보냄</button>
+          </div>
+          ${msgMode==='staff' ? `<label class="mh-sign">보내는 사람 <input id="msgSign" placeholder="예: 교무부 홍길동" value="${esc(msgSign)}"></label>` : ''}
+          ${msgList.length>1 ? `<button class="btn-ghost" data-copy="all">전체 복사</button>` : ''}
+        </div>
+      </div>
+      ${body}
+    </div>`;
+  }
+
+  // 쪽지 상자 높이를 글 길이에 맞춤 (스크롤 없이 전부 보이게)
+  function fitMsgBoxes(){
+    subResults.querySelectorAll('textarea[data-msg]').forEach(ta=>{ ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 2) + 'px'; });
+  }
+  function copyText(text, btn){
+    const done = ()=>{
+      if(!btn) return;
+      const label = btn.textContent;
+      btn.textContent = '복사됨 ✓'; btn.classList.add('copied');
+      setTimeout(()=>{ btn.textContent = label; btn.classList.remove('copied'); }, 1500);
+    };
+    const fallback = ()=>{
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      let ok = false; try{ ok = document.execCommand('copy'); }catch(e){}
+      ta.remove();
+      if(ok) done(); else alert('자동 복사가 막혀 있습니다. 상자 안의 글을 직접 선택해서 복사해 주세요(Ctrl+A, Ctrl+C).');
+    };
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else fallback();
+  }
+  function currentMsgText(i){
+    const ta = subResults.querySelector(`textarea[data-msg="${i}"]`);
+    return ta ? ta.value : (msgList[i] ? msgList[i].text : '');
+  }
+  subResults.addEventListener('input', (e)=>{
+    if(e.target.dataset.msg !== undefined){ fitMsgBoxes(); return; }
+    if(e.target.id !== 'msgSign') return;
+    msgSign = e.target.value;
+    lsSet(LS_SIGN, msgSign);
+    // 서명만 바뀌면 쪽지 글만 다시 채움 (입력 중인 칸이 사라지지 않게)
+    msgList = buildMessages(teacherNames[subTeacherIdx]);
+    msgList.forEach((m,i)=>{ const ta = subResults.querySelector(`textarea[data-msg="${i}"]`); if(ta) ta.value = m.text; });
+    fitMsgBoxes();
+  });
+
+  function periodDetailHTML(absentName, date, day, period, cell){
+    const cls = cell.class, subj = cell.subject;
+    const rec = findRecord(absentName, date, period);
+    const recs = records.filter(r=> r!==rec);   // 이 교시 기록은 빼고 후보 계산 (다시 고를 수 있게)
+    const myCat = catOf(absentName);
+    subCtx = {absent:absentName, date, day, period, cls, subject:subj};
+
+    // ----- 보강 후보: 그 시간이 비어 있는 선생님 -----
+    const free = teacherNames
+      .filter(n=> n!==absentName && !absentOn(n, date, recs) && !busyAt(n, date, period, recs))
+      .map(n=>({n, cat:catOf(n), load:dayLoad(n, date, recs), run:runWith(n, date, period, recs), ext:extOf(n), same:subjectSetFor(n).has(subj)}))
+      .sort((a,b)=> (b.same - a.same) || (a.load - b.load) || a.n.localeCompare(b.n, 'ko'));
+    const isSel = n=> rec && rec.type==='보강' && rec.sub===n;
+    const sameCat = free.filter(x=> x.cat===myCat);
+    const otherCat = free.filter(x=> x.cat!==myCat);
+    // ① 동과 보강: 같은 교과 선생님 (같은 과목을 가르치는 선생님이 맨 위)
+    const sameRows = sameCat.map(x=>`<button class="cand-row ${isSel(x.n)?'selected':''}" data-assign="보강" data-kind="same" data-name="${esc(x.n)}">
+        <b>${esc(x.n)}</b><span class="badge-cat">${esc(mainSubjectOf(x.n))}</span>
+        ${x.same ? `<span class="same-subj">같은 과목</span>` : ''}
+        ${x.ext ? `<span class="meta-txt">내선 ${esc(x.ext)}</span>` : ''}
+        ${x.run>=3 ? `<span class="warn">${x.run}연강</span>` : ''}
+        <span class="load">그날 ${x.load}시간</span></button>`).join('');
+    // ② 타과 보강: 다른 교과 선생님, 교과별로 묶음
+    const groups = CATEGORIES.map(c=>{
+      const list = otherCat.filter(x=> x.cat===c);
+      if(!list.length) return '';
+      return `<div class="cat-group"><span class="cat-label">${c}</span><div class="inline-cands">${list.map(x=>{
+        const bits = [x.ext, `${x.load}시간`].filter(Boolean).join('·');
+        return `<button class="inline-cand ${isSel(x.n)?'selected':''}" data-assign="보강" data-kind="other" data-name="${esc(x.n)}">${esc(x.n)}<small>(${esc(bits)}${x.run>=3 ? `·<span class="w">${x.run}연강</span>` : ''})</small></button>`;
+      }).join('')}</div></div>`;
+    }).join('');
+    const sameHTML = sameRows || `<div class="cand-empty">이 시간에 비어있는 ${myCat} 교과 선생님이 없습니다.</div>`;
+    const otherHTML = groups || `<div class="cand-empty">이 시간에 비어있는 다른 교과 선생님이 없습니다.</div>`;
+
+    // ----- 교체 후보: 같은 학급의 같은 주 다른 수업과 맞바꾸기 -----
+    // 조건: 결근 선생님이 상대 시간에 학교에 있고 비어 있음 + 상대 선생님이 이 시간에 비어 있음
+    const dIdx = DAYS.indexOf(day);
+    const orderDays = DAYS.slice().sort((a,b)=>{
+      const da = Math.abs(DAYS.indexOf(a)-dIdx), db = Math.abs(DAYS.indexOf(b)-dIdx);
+      return da!==db ? da-db : DAYS.indexOf(b)-DAYS.indexOf(a);
+    });
+    const today = todayStr();
+    const swaps = [];
+    orderDays.forEach(d2=>{
+      const date2 = weekDate(date, d2);
+      const arr = (DATA.classes[cls] || {})[d2] || [];
+      arr.forEach((c2, i)=>{
+        const p2 = i+1;
+        if(date2===date && p2===period) return;
+        if(!(c2 && c2.teacher && c2.teacher!==absentName)) return;
+        const partner = c2.teacher;
+        if(!teacherByName(partner)) return;   // 담당 교사 정보가 없는 칸(합반/선택과목 등)은 제외
+        if(awayAt(date2, p2)) return;          // 결근 선생님이 그 시간에도 자리에 없음
+        if(!absenceDates().includes(date2) && absentOn(absentName, date2, recs)) return;
+        if(busyAt(absentName, date2, p2, recs)) return;
+        if(absentOn(partner, date, recs) || absentOn(partner, date2, recs)) return;
+        if(busyAt(partner, date, period, recs)) return;
+        // 그 반 그 시간이 이미 다른 결보강으로 바뀌었으면 제외
+        if(recs.some(r=> r.cls===cls && ((r.date===date2 && r.period===p2) || (r.type==='교체' && r.subDate===date2 && r.subPeriod===p2)))) return;
+        swaps.push({day:d2, date:date2, period:p2, subject:c2.subject, teacher:partner,
+          partnerRun:runWith(partner, date, period, recs), myRun:runWith(absentName, date2, p2, recs),
+          load:dayLoad(partner, date, recs), past: date2 < today});
+      });
+    });
+    const swapSel = s=> rec && rec.type==='교체' && rec.sub===s.teacher && rec.subDate===s.date && rec.subPeriod===s.period;
+    function swapRow(s){
+      return `<button class="cand-row ${swapSel(s)?'selected':''} ${s.past?'past':''}" data-assign="교체" data-kind="swap" data-name="${esc(s.teacher)}" data-date2="${s.date}" data-p2="${s.period}" data-subj2="${esc(s.subject)}" title="${mdDay(s.date)} ${s.period}교시와 맞바꾸기">
+        <b>${esc(s.teacher)}</b><span class="badge-cat">${esc(mainSubjectOf(s.teacher))}</span>
+        ${extOf(s.teacher) ? `<span class="meta-txt">내선 ${esc(extOf(s.teacher))}</span>` : ''}
+        <span class="meta-txt mono">${day}${period} ↔ ${s.day}${s.period} (${esc(s.subject)})</span>
+        ${s.partnerRun>=3 ? `<span class="warn">상대 ${s.partnerRun}연강</span>` : ''}
+        ${s.myRun>=3 ? `<span class="warn">내 ${s.myRun}연강</span>` : ''}
+        ${s.past ? `<span class="meta-txt">지난 날짜</span>` : ''}
+        <span class="load">그날 ${s.load}시간</span></button>`;
+    }
+    const CAP = 10;
+    const swapHead = swaps.slice(0, CAP).map(swapRow).join('');
+    const swapRest = swaps.slice(CAP);
+    const swapMore = swapRest.length ? `<details class="more-wrap swap-more"><summary>+${swapRest.length}개 더보기</summary>${swapRest.map(swapRow).join('')}</details>` : '';
+    const swapHTML = swaps.length===0
+      ? `<div class="cand-empty">이번 주 안에 서로 맞바꿀 수 있는 수업이 없습니다.</div>`
+      : `${swapHead}${swapMore}`;
+
+    const recKind = rec ? kindOf(rec) : '';
+    const assignedBar = rec ? `<div class="assigned-bar k-${recKind}">✅ ${KIND_LABEL[recKind]} 배정됨: ${esc(rec.sub)} 선생님
+        ${rec.type==='교체' ? ` · ${mdDay(rec.subDate)} ${rec.subPeriod}교시 ${esc(rec.subSubject)}와 맞바꿈` : ''}
+        <button class="btn-ghost" data-unassign="${rec.id}">배정 취소</button></div>` : '';
+
+    function section(kind, ico, title, count, unit, desc, body, wide){
+      return `<section class="cand-sec k-${kind} ${wide ? 'wide' : ''}">
+        <div class="sec-head"><span class="sec-ico">${ico}</span><b>${title}</b><span class="sec-count">${count}${unit}</span>
+          <span class="sec-desc">${desc}</span></div>
+        <div class="sec-body">${body}</div>
+      </section>`;
+    }
+
+    return `<div class="period-block">
+      <div class="pb-head">
+        <span class="pnum">${period}</span>
+        <span class="pclass">${esc(cls)}</span>
+        <span class="psubj">${esc(subj)}${NON_SUBJECTS.has(subj) ? ' (창체)' : ''}</span>
+        <span class="spacer"></span>
+        <span class="meta-txt">이름을 누르면 배정, 한 번 더 누르면 취소</span>
+      </div>
+      ${assignedBar}
+      <div class="cand-sections">
+        ${section('same', '동', '동과 보강', sameCat.length, '명', `같은 ${myCat} 교과 선생님이 이 시간에 대신 수업합니다. 같은 과목 선생님이 맨 위에 있어요.`, sameHTML)}
+        ${section('swap', '교', '수업 교체', swaps.length, '개', `${esc(cls)}의 같은 주 다른 수업과 맞바꿉니다. 가까운 날짜 순이에요.`, swapHTML)}
+        ${section('other', '타', '타과 보강', otherCat.length, '명', '다른 교과 선생님이 이 시간에 들어갑니다(자습 지도 등). 교과별로 묶었어요.', otherHTML, true)}
+      </div>
+    </div>`;
+  }
+
+  function nextOpenPeriod(absentName, date, after){
+    const needed = taughtPeriods(absentName, date).filter(x=> isAbsentPeriod(x.period));
+    const open = needed.filter(x=> !findRecord(absentName, date, x.period));
+    const next = open.find(x=> x.period > after) || open[0];
+    return next ? next.period : after;
+  }
+
+  function assignFrom(btn){
+    const c = subCtx; if(!c) return;
+    const kind = btn.dataset.assign, name = btn.dataset.name;
+    const existing = findRecord(c.absent, c.date, c.period);
+    const same = existing && existing.type===kind && existing.sub===name &&
+      (kind==='보강' || (existing.subDate===btn.dataset.date2 && existing.subPeriod===parseInt(btn.dataset.p2,10)));
+    records = records.filter(r=> r!==existing);
+    if(!same){
+      const base = {id: existing ? existing.id : uid(), absent:c.absent, date:c.date, day:c.day, period:c.period,
+        cls:c.cls, subject:c.subject, reason:subReason, createdAt:Date.now()};
+      if(kind==='보강'){
+        const k = btn.dataset.kind==='other' ? 'other' : 'same';
+        records.push(Object.assign(base, {type:'보강', kind:k, sub:name, subDate:c.date, subDay:c.day, subPeriod:c.period,
+          subSubject:c.subject, note:KIND_NOTE[k]}));
+      } else {
+        const date2 = btn.dataset.date2;
+        records.push(Object.assign(base, {type:'교체', kind:'swap', sub:name, subDate:date2, subDay:dayOf(date2),
+          subPeriod:parseInt(btn.dataset.p2,10), subSubject:btn.dataset.subj2, note:KIND_NOTE.swap}));
+      }
+      subPeriod = nextOpenPeriod(c.absent, c.date, c.period);
+    }
+    saveRecords();
+    renderSub();
+  }
+
+  subResults.addEventListener('click', (e)=>{
+    const mm = e.target.closest('[data-mode]');
+    if(mm){ msgMode = mm.dataset.mode; lsSet(LS_MSGMODE, msgMode); renderSub(); return; }
+    const cp = e.target.closest('[data-copy]');
+    if(cp){
+      const text = cp.dataset.copy==='all'
+        ? msgList.map((m,i)=> currentMsgText(i)).join('\n\n──────────\n\n')
+        : currentMsgText(parseInt(cp.dataset.copy,10));
+      copyText(text, cp); return;
+    }
+    const a = e.target.closest('[data-assign]');
+    if(a){ assignFrom(a); return; }
+    const u = e.target.closest('[data-unassign]');
+    if(u){ records = records.filter(r=> r.id!==u.dataset.unassign); saveRecords(); renderSub(); return; }
+    const t = e.target.closest('[data-period]');
+    if(t && !t.disabled){ subPeriod = parseInt(t.dataset.period,10); renderSub(); return; }
+    const pp = e.target.closest('[data-part]');
+    if(pp){
+      const p = parseInt(pp.dataset.part,10);
+      if(partPeriods.has(p)) partPeriods.delete(p); else partPeriods.add(p);
+      subPeriod = partPeriods.has(p) ? p : null;
+      renderSub(); return;
+    }
+    if(e.target.closest('#subPrintForm')){ printForms(records.filter(r=> r.absent===teacherNames[subTeacherIdx])); return; }
+    if(e.target.closest('#subPrintDaily')){ printDaily(records.filter(r=> r.date===subDate)); return; }
+  });
+  document.getElementById('subDates').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-date]'); if(!b) return;
+    subDate = b.dataset.date; subPeriod = null; renderSub();
+  });
+
+  // =====================================================================
+  // 결보강 일지 · 인쇄
+  // =====================================================================
+  const logTeacher = document.getElementById('logTeacher');
+  const logFrom = document.getElementById('logFrom');
+  const logTo = document.getElementById('logTo');
+
+  function sortRecs(list){
+    return list.slice().sort((a,b)=> a.date.localeCompare(b.date) || a.period-b.period || a.absent.localeCompare(b.absent,'ko'));
+  }
+  function buildLogTeacherSelect(){
+    const cur = logTeacher.value;
+    const withRecs = new Set(records.map(r=> r.absent));
+    logTeacher.innerHTML = `<option value="">전체 (${withRecs.size}명)</option>` +
+      teacherNames.filter(n=> withRecs.has(n)).map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+    logTeacher.value = withRecs.has(cur) ? cur : '';
+  }
+  function filteredRecords(){
+    return sortRecs(records.filter(r=>
+      (!logTeacher.value || r.absent===logTeacher.value) &&
+      (!logFrom.value || r.date >= logFrom.value) &&
+      (!logTo.value || r.date <= logTo.value)));
+  }
+  function renderLog(){
+    const list = filteredRecords();
+    const box = document.getElementById('logTable');
+    const resetBtn = document.getElementById('resetRecords');
+    resetBtn.disabled = !records.length;
+    document.getElementById('resetCount').textContent = records.length ? `현재 저장된 기록 ${records.length}건` : '저장된 기록 없음';
+    if(!list.length){
+      box.innerHTML = `<div class="cand-empty" style="text-align:center; padding:30px 0;">${records.length ? '조건에 맞는 기록이 없습니다.' : '아직 결보강 기록이 없습니다. 「보강·교체」 탭에서 선생님을 배정하면 여기에 쌓입니다.'}</div>`;
+      return;
+    }
+    box.innerHTML = `<div class="table-scroll"><table class="log">
+      <tr><th>날짜</th><th>교시</th><th>학급</th><th>과목</th><th>결근 교사</th><th>사유</th><th>구분</th><th>보강·교체 대상</th><th>수업 교사</th><th>비고</th><th></th></tr>
+      ${list.map(r=>`<tr>
+        <td class="mono">${mdDay(r.date)}</td><td>${r.period}</td><td>${esc(r.cls)}</td><td>${esc(r.subject)}</td>
+        <td><b>${esc(r.absent)}</b></td>
+        <td><input data-edit="reason" data-id="${r.id}" value="${esc(r.reason)}"></td>
+        <td><span class="type-pill k-${kindOf(r)}">${KIND_LABEL[kindOf(r)]}</span></td>
+        <td class="mono">${mdDay(r.subDate)} ${r.subPeriod}교시 ${esc(r.subSubject)}</td>
+        <td><b>${esc(r.sub)}</b></td>
+        <td><input data-edit="note" data-id="${r.id}" value="${esc(r.note)}"></td>
+        <td><button class="del-btn" data-del="${r.id}" title="삭제">✕</button></td>
+      </tr>`).join('')}
+    </table></div>`;
+  }
+  [logTeacher, logFrom, logTo].forEach(el=> el.addEventListener('change', renderLog));
+  document.getElementById('logTable').addEventListener('change', (e)=>{
+    const el = e.target.closest('[data-edit]'); if(!el) return;
+    const r = records.find(x=> x.id===el.dataset.id); if(!r) return;
+    r[el.dataset.edit] = el.value.trim();
+    saveRecords();
+  });
+  document.getElementById('logTable').addEventListener('click', (e)=>{
+    const b = e.target.closest('[data-del]'); if(!b) return;
+    const r = records.find(x=> x.id===b.dataset.del); if(!r) return;
+    if(!confirm(`${mdDay(r.date)} ${r.period}교시 ${r.cls} (${r.absent} → ${r.sub}) 기록을 삭제할까요?`)) return;
+    records = records.filter(x=> x!==r);
+    saveRecords(); buildLogTeacherSelect(); renderLog();
+  });
+  document.getElementById('logPrintForm').addEventListener('click', ()=> printForms(filteredRecords()));
+  document.getElementById('logPrintDaily').addEventListener('click', ()=> printDaily(filteredRecords()));
+
+  // ----- 「결보강 및 수업교체일지」 양식 -----
+  // 학교 엑셀 양식(A4 세로, 배율 67%)과 같은 크기·칸·선으로 한 장에 17칸.
+  // 1~8번 칸은 양식처럼 연번·화살표·(인)이 미리 찍혀 있고, 9칸째부터는 기록이 있을 때만 채운다.
+  const FORM_ROWS = 17;
+  const FORM_NUMBERED = 8;
+  // A~O열 너비(mm): 엑셀 양식 인쇄 미리보기에서 잰 값
+  const FORM_COLS_MM = [10.3, 10.1, 10.3, 8.3, 12.4, 23.6, 8.0, 10.3, 9.9, 8.6, 23.5, 17.1, 11.1, 13.8, 14.2];
+  const FORM_ARROW = `<svg viewBox="0 0 68 27" aria-hidden="true"><polygon points="0,13.5 13.5,0 13.5,6.75 54.5,6.75 54.5,0 68,13.5 54.5,27 54.5,20.25 13.5,20.25 13.5,27" fill="#000"/></svg>`;
+  function formPageHTML(name, rows, startNo){
+    const colgroup = `<colgroup>${FORM_COLS_MM.map(w=>`<col style="width:${w}mm">`).join('')}</colgroup>`;
+    const gridCols = `grid-template-columns:${FORM_COLS_MM.map(w=>`${w}mm`).join(' ')}`;
+    const body = [];
+    for(let i=0; i<FORM_ROWS; i++){
+      const r = rows[i];
+      const numbered = r || i < FORM_NUMBERED;
+      const idx = numbered ? startNo+i : '';
+      const arrow = numbered ? FORM_ARROW : '';
+      const sign = numbered ? '(인)' : '';
+      body.push(r ? `<tr>
+        <td class="idx">${idx}</td><td>${md(r.date)}</td><td>${dayOf(r.date)}</td><td>${r.period}</td><td>${esc(r.cls)}</td><td>${esc(r.subject)}</td>
+        <td class="g">${arrow}</td>
+        <td>${md(r.subDate)}</td><td>${dayOf(r.subDate)}</td><td>${r.subPeriod}</td><td>${esc(r.subSubject)}</td><td>${esc(r.sub)}</td><td class="sign">${sign}</td>
+        <td class="sm">${esc(r.reason)}</td><td class="sm">${esc(r.note)}</td></tr>`
+      : `<tr><td class="idx">${idx}</td><td></td><td></td><td></td><td></td><td></td><td class="g">${arrow}</td><td></td><td></td><td></td><td></td><td></td><td class="sign">${sign}</td><td class="sm"></td><td class="sm"></td></tr>`);
+    }
+    return `<div class="form-page"><div class="fp-inner">
+      <div class="fp-title">결보강 및 수업교체일지</div>
+      <div class="fp-line l6" style="${gridCols}">
+        <span class="fp-label">교사명 :</span><span class="fp-name">${esc(name)}</span><span class="fp-sign">(인)</span>
+      </div>
+      <div class="fp-line l7" style="${gridCols}"><span class="fp-school">${YEAR_LABEL} ${SCHOOL}</span></div>
+      <table class="form">${colgroup}
+        <thead>
+          <tr class="h1"><th rowspan="2" class="c-idx">연번</th><th colspan="5" class="c-grp">교체원본(본인수업)</th><th rowspan="2" class="g"></th><th colspan="6" class="c-grp">보강 및 교체대상(상대수업)</th><th rowspan="2">교체사유</th><th rowspan="2" class="dbl">비고</th></tr>
+          <tr class="h2"><th class="dbl">월/일</th><th class="dbl">(요일)</th><th class="dbl">교시</th><th class="dbl">학년-반</th><th class="dbl">과목명</th><th class="dbl">월/일</th><th class="dbl">(요일)</th><th class="dbl">교시</th><th class="dbl">과목명</th><th class="dbl">수업교사</th><th class="dbl">(인)</th></tr>
+        </thead>
+        <tbody>${body.join('')}</tbody>
+      </table>
+      <div class="fp-notes"><div class="h">시간표 운영상 참고사항</div><div class="b"></div></div>
+    </div></div>`;
+  }
+  // 인쇄 창: 용지 여백 0에 양식 페이지(210×297mm)를 그대로 올림. 화면에서는 회색 바탕에 종이처럼 보여 줌.
+  const FORM_PRINT_CSS = `
+    @page{size:A4 portrait; margin:0;}
+    body{background:#e8e8ee !important;}
+    .print-sheet{max-width:none; margin:20px auto; padding:0 0 30px;}
+    .form-page{margin:0 auto 18px; box-shadow:0 2px 12px rgba(0,0,0,.18);}
+    @media print{
+      html, body{margin:0 !important; padding:0 !important; background:#fff !important;}
+      .print-sheet{margin:0 !important; padding:0 !important;}
+      .form-page{margin:0; box-shadow:none;}
+    }`;
+  function printForms(list){
+    if(!list.length){ alert('인쇄할 결보강 기록이 없습니다. 먼저 보강·교체 선생님을 배정해 주세요.'); return; }
+    const byTeacher = new Map();
+    sortRecs(list).forEach(r=>{ if(!byTeacher.has(r.absent)) byTeacher.set(r.absent, []); byTeacher.get(r.absent).push(r); });
+    const pages = [];
+    byTeacher.forEach((rows, name)=>{
+      for(let i=0; i<rows.length; i+=FORM_ROWS) pages.push(formPageHTML(name, rows.slice(i, i+FORM_ROWS), i+1));
+    });
+    openPrintWindow(pages.join(''), '결보강 및 수업교체일지', FORM_PRINT_CSS,
+      "용지 A4·세로, 배율 100%(기본값)로 인쇄하세요. PDF로 저장하려면 '대상(프린터)'을 'PDF로 저장'으로 바꾸면 됩니다.");
+  }
+  // ----- 일자별 결보강 현황 (교무실 게시용) -----
+  function printDaily(list){
+    if(!list.length){ alert('인쇄할 결보강 기록이 없습니다.'); return; }
+    const byDate = new Map();
+    sortRecs(list).forEach(r=>{ if(!byDate.has(r.date)) byDate.set(r.date, []); byDate.get(r.date).push(r); });
+    const pages = [];
+    byDate.forEach((rows, date)=>{
+      const absentees = [...new Set(rows.map(r=> `${r.absent}(${r.reason})`))].join(', ');
+      pages.push(`<div class="daily-page">
+        <h2>${md(date)}(${dayOf(date)}) 결보강 현황</h2>
+        <p class="dsub">${YEAR_LABEL} ${SCHOOL} · 결근: ${esc(absentees)}</p>
+        <table class="daily">
+          <tr><th>교시</th><th>학급</th><th>과목</th><th>결근 교사</th><th>사유</th><th>구분</th><th>수업 교사</th><th>비고</th></tr>
+          ${rows.map(r=>`<tr><td>${r.period}</td><td>${esc(r.cls)}</td><td>${esc(r.subject)}</td><td>${esc(r.absent)}</td><td>${esc(r.reason)}</td>
+            <td>${r.type}</td><td><b>${esc(r.sub)}</b>${r.type==='교체' ? ` <small>(${mdDay(r.subDate)} ${r.subPeriod}교시와 교체)</small>` : ''}</td><td>${esc(r.note)}</td></tr>`).join('')}
+        </table></div>`);
+    });
+    openPrintWindow(pages.join(''), '결보강 현황', '@page{size:A4 portrait; margin:12mm;}');
+  }
+
+  // ----- 백업 · CSV -----
+  function download(filename, text, type){
+    const blob = new Blob([text], {type});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=> URL.revokeObjectURL(url), 10000);
+  }
+  function saveBackup(){
+    download(`결보강기록_${todayStr()}.json`, JSON.stringify({version:1, savedAt:new Date().toISOString(), records, teacherMeta}, null, 1), 'application/json');
+  }
+  document.getElementById('backupSave').addEventListener('click', saveBackup);
+
+  // ----- 기록 초기화 · 날짜 빠른 선택 -----
+  document.getElementById('resetRecords').addEventListener('click', ()=>{
+    if(!records.length){ alert('지울 결보강 기록이 없습니다.'); return; }
+    if(!confirm(`저장된 결보강 기록 ${records.length}건을 모두 지웁니다.\n지운 기록은 되돌릴 수 없습니다. 계속할까요?`)) return;
+    if(document.getElementById('resetBackup').checked) saveBackup();
+    records = [];
+    saveRecords();
+    logFrom.value = ''; logTo.value = '';
+    buildLogTeacherSelect(); renderLog(); updateStats();
+    alert('결보강 기록을 모두 지웠습니다. 다음 결보강을 새로 입력하시면 됩니다.');
+  });
+  document.querySelectorAll('.quick-range').forEach(b=> b.addEventListener('click', ()=>{
+    const v = b.dataset.range==='today' ? todayStr() : '';
+    logFrom.value = v; logTo.value = v;
+    renderLog();
+  }));
+  document.getElementById('backupLoadBtn').addEventListener('click', ()=> document.getElementById('backupLoad').click());
+  document.getElementById('backupLoad').addEventListener('change', (e)=>{
+    const f = e.target.files[0]; if(!f) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const obj = JSON.parse(reader.result);
+        if(!Array.isArray(obj.records)) throw new Error('records 없음');
+        const ids = new Set(records.map(r=> r.id));
+        const added = obj.records.filter(r=> r && r.id && !ids.has(r.id));
+        records = records.concat(added);
+        if(obj.teacherMeta && typeof obj.teacherMeta === 'object') teacherMeta = Object.assign({}, obj.teacherMeta, teacherMeta);
+        saveRecords(); saveMeta();
+        buildLogTeacherSelect(); renderLog();
+        alert(`백업에서 기록 ${added.length}건을 추가했습니다. (이미 있던 기록은 그대로 둡니다)`);
+      }catch(err){ alert('백업 파일을 읽지 못했습니다. 이 사이트에서 저장한 .json 파일인지 확인해 주세요.'); }
+      e.target.value = '';
+    };
+    reader.readAsText(f, 'utf-8');
+  });
+  document.getElementById('csvSave').addEventListener('click', ()=>{
+    const list = filteredRecords();
+    if(!list.length){ alert('저장할 기록이 없습니다.'); return; }
+    const head = ['결근교사','월/일','요일','교시','학년-반','과목명','대상 월/일','대상 요일','대상 교시','대상 과목명','수업교사','구분','교체사유','비고'];
+    const q = v=> `"${String(v==null?'':v).replace(/"/g,'""')}"`;
+    const lines = [head.map(q).join(',')].concat(list.map(r=> [r.absent, md(r.date), dayOf(r.date), r.period, r.cls, r.subject,
+      md(r.subDate), dayOf(r.subDate), r.subPeriod, r.subSubject, r.sub, r.type, r.reason, r.note].map(q).join(',')));
+    download(`결보강일지_${todayStr()}.csv`, '﻿' + lines.join('\r\n'), 'text/csv');
+  });
+
+  function updateStats(){ document.getElementById('statRecords').textContent = records.length; }
+
+  // ---------- init ----------
+  document.getElementById('statTeachers').textContent = DATA.teachers.length;
+  document.getElementById('statClasses').textContent = DATA.classList.length;
+  updateStats();
+  buildSubTeacherSelect();
+  setTab('home');
+  mode='teacher'; buildPicker(); render();
+})();
+</script>
+</body>
+</html>
